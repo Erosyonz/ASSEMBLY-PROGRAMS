@@ -1,0 +1,1725 @@
+; Filename: EXER14.ASM
+; Programmer Name: ALLEAH DELA PENA
+; Date: September 12, 2025
+; Description: Display multiple string variables on a single line.
+
+.MODEL small
+.STACK 200h
+.DATA
+String1 DB 'Line1','$'
+String2 DB 'Line2','$'
+String3 DB 'Line3','$'
+
+.CODE
+ProgramStart:
+    mov ax,@data
+    mov ds,ax
+
+    mov ah,9
+    mov dx,OFFSET String1
+    int 21h
+
+    mov dx,OFFSET String2
+    int 21h
+
+    mov dx,OFFSET String3
+    int 21h
+
+    mov ah,4ch
+    int 21h
+END ProgramStart
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+; Filename: EXER15.ASM
+; Programmer Name: ALLEAH DELA PENA
+; Date: September 12, 2025
+; Description: Display multiple string variables on separate lines.
+
+.MODEL small
+.STACK 200h
+.DATA
+String1 DB 'Line1',0dh,0ah,'$'
+String2 DB 'Line2',0dh,0ah,'$'
+String3 DB 'Line3',0dh,0ah,'$'
+
+.CODE
+ProgramStart:
+    mov ax,@data
+    mov ds,ax
+
+    mov ah,9
+    mov dx,OFFSET String1
+    int 21h
+
+    mov dx,OFFSET String2
+    int 21h
+
+    mov dx,OFFSET String3
+    int 21h
+
+    mov ah,4ch
+    int 21h
+END ProgramStart
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+; Filename: EXER16.ASM
+; Programmer Name: ALLEAH DELA PENA
+; Date: September 12, 2025
+; Description: Get character input and display it back.
+
+.MODEL small
+.STACK 200h
+.DATA
+    inputChar db ?
+    inputMsg db 'Enter a character: $'
+    outputMsg db 0dh,0ah,'You entered: $'
+
+.CODE
+Main:
+    mov ax,@data
+    mov ds,ax
+
+    mov dx,offset inputMsg
+    mov ah,09h
+    int 21h
+
+    mov ah,01h
+    int 21h
+    mov inputChar,al
+
+    mov dx,offset outputMsg
+    mov ah,09h
+    int 21h
+
+    mov dl,inputChar
+    mov ah,02h
+    int 21h
+
+    mov ax,4C00h
+    int 21h
+END Main
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+; Filename: EXER17.ASM
+; Programmer Name: ALLEAH DELA PENA
+; Date: September 12, 2025
+; Description: Continuously get character input and display it until Enter is pressed.
+
+.MODEL small
+.STACK 200h
+.DATA
+
+.CODE
+ProgramStart:
+EchoLoop:
+    mov ah,1
+    int 21h
+    cmp al,13
+    jz EchoDone
+
+    mov dl,al
+    mov ah,2
+    int 21h
+    jmp EchoLoop
+
+EchoDone:
+    mov ah,4ch
+    int 21h
+END ProgramStart
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+; Filename: EXER18.ASM
+; Programmer Name: ALLEAH DELA PENA
+; Date: September 12, 2025
+; Description: Get char input. If 'y' or 'Y', print Good Afternoon. Else, Good Morning.
+
+.MODEL small
+.STACK 100h
+.DATA
+    TimePrompt DB 'Is it after 12 noon (Y/N)?$'
+    GoodMorningMessage DB 13,10,'Good morning, world!',13,10,'$'
+    GoodAfternoonMessage DB 13,10,'Good afternoon, world!',13,10,'$'
+
+.CODE
+ProgramStart:
+    mov ax,@data
+    mov ds,ax
+
+    mov dx,OFFSET TimePrompt
+    mov ah,9
+    int 21h
+
+    mov ah,1
+    int 21h
+
+    cmp al,'y'
+    jz IsAfternoon
+    cmp al,'Y'
+    jz IsAfternoon
+
+IsMorning:
+    mov dx,OFFSET GoodMorningMessage
+    jmp DisplayGreeting
+
+IsAfternoon:
+    mov dx,OFFSET GoodAfternoonMessage
+
+DisplayGreeting:
+    mov ah,9
+    int 21h
+
+    mov ah,4ch
+    int 21h
+END ProgramStart
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+; Filename: EXER19.ASM
+; Programmer Name: ALLEAH DELA PENA
+; Date: September 12, 2025
+; Description: Get string input and display it back.
+
+.MODEL small
+.STACK 100h
+.DATA
+MAXIMUM_STRING_LENGTH EQU 1000
+StringInput DB MAXIMUM_STRING_LENGTH DUP (?)
+InputPrompt DB 'Enter text: $'
+
+.CODE
+ProgramStart:
+    mov ax,@data
+    mov ds,ax
+
+    mov dx,OFFSET InputPrompt
+    mov ah,9
+    int 21h
+
+    mov ah,3fh
+    mov bx,0
+    mov cx,MAXIMUM_STRING_LENGTH
+    mov dx,OFFSET StringInput
+    int 21h
+
+    and ax,ax
+    jz Done
+    mov cx,ax
+    mov bx,OFFSET StringInput
+
+    mov ah,40h
+    mov bx,1
+    mov dx,OFFSET StringInput
+    int 21h
+
+Done:
+    mov ah,4ch
+    int 21h
+END ProgramStart
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+; Filename: EXER20.ASM
+; Programmer Name: ALLEAH DELA PENA
+; Date: September 12, 2025
+; Description: This assembly language program will get string input and
+; display the reverse of the string.
+
+.MODEL small
+.STACK 100h
+.DATA
+MAXIMUM_STRING_LENGTH EQU 1000
+StringToReverse DB MAXIMUM_STRING_LENGTH DUP(?)
+ReverseString   DB MAXIMUM_STRING_LENGTH DUP(?)
+
+.CODE
+ProgramStart:
+    mov ax,@data
+    mov ds,ax          ; set DS to point to the data segment
+    mov ah,3fh         ; DOS read from handle function #
+    mov bx,0           ; standard input handle
+    mov cx,MAXIMUM_STRING_LENGTH ; read up to maximum number of characters
+    mov dx,OFFSET StringToReverse ; store the string here
+    int 21h            ; get the string
+
+    and ax,ax          ; were any characters read?
+    jz Done            ; no, so you're done
+    mov cx,ax          ; put string length in CX, where
+                       ; you can use it as a counter
+    push cx            ; save the string length
+    mov bx,OFFSET StringToReverse
+    mov si,OFFSET ReverseString
+    add si,cx
+    dec si             ; point to the end of the reverse string buffer
+
+ReverseLoop:
+    mov al,[bx]        ; get the next character
+    mov [si],al        ; store the characters in reverse order
+    inc bx             ; point to next character
+    dec si             ; point to previous location in reverse buffer
+    loop ReverseLoop   ; move next character, if any
+
+    pop cx             ; get back the string length
+    mov ah,40h         ; DOS write from handle function #
+    mov bx,1           ; standard output handle
+    mov dx,OFFSET ReverseString ; print this string
+    int 21h            ; print the reversed string
+
+Done:
+    mov ah,4ch         ; DOS terminate program function #
+    int 21h            ; terminate the program
+END ProgramStart
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+; filepath: c:\Users\Arvy\OneDrive - Cebu Institute of Technology University\CS243DELAPENA\EXER21.ASM
+
+; Filename: EXER21.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: September 12, 2025
+; Description: This assembly language programa program will asks the user to input 3 characters. Then display each character on its own line.
+
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    prompt      DB 'Enter 3 characters: $'
+    charArr     DB 3 DUP(?)
+    
+    String1    DB 'Enter first character: ', '$'
+    String2    DB 13,10,'Enter second character: ', '$'
+    String3    DB 13,10,'Enter third character: ', '$'
+    String4    DB 13,10,'The first character is: ', '$'
+    String5    DB 13,10,'The second character is: ', '$'
+    String6    DB 13,10,'The third character is: ', '$'
+    newlineStr DB 13,10,'$'
+NEWLINE MACRO
+    mov ah, 9
+    mov dx, offset newlineStr
+    int 21h
+ENDM
+.CODE
+MAIN PROC
+   MOV AX, @DATA
+    MOV DS, AX
+
+    ; Read first character
+    mov ah, 9
+    mov dx, offset String1
+    int 21h
+    
+    mov ah, 1
+    int 21h
+    mov charArr, al
+
+    NEWLINE
+    ; Read second character
+    mov ah, 9
+    mov dx, offset String2
+    int 21h
+
+    mov ah, 1
+    int 21h
+    mov charArr+1, al
+    
+    NEWLINE
+    ; Read third character
+    mov ah, 9
+    mov dx, offset String3
+    int 21h
+
+    mov ah, 1
+    int 21h
+    mov charArr+2, al
+    
+    NEWLINE
+    ; Print each character on its own line
+    lea si, charArr
+    mov cx, 3
+
+PRINT_LOOP:
+
+    ; Print first character
+    mov ah, 9
+    mov dx, offset String4
+    int 21h
+
+    mov dl, charArr
+    mov ah, 2
+    int 21h
+
+    NEWLINE
+    
+    ; Print second character
+    mov ah, 9
+    mov dx, offset String5
+    int 21h
+
+    mov dl, charArr+1
+    mov ah, 2
+    int 21h
+
+    NEWLINE
+    ; Print third character
+    mov ah, 9
+    mov dx, offset String6
+    int 21h
+
+    mov dl, charArr+2
+    mov ah, 2
+    int 21h
+
+     NEWLINE   
+    ; Exit program
+    mov ah, 4ch
+    int 21h
+; End of program
+MAIN ENDP
+END MAIN
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+; Filename: EXER22.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: September 12, 2025
+; Description: This assembly language programa program will asks user to input a character. Determine if character is letter A and display message "Yes, you have entered letter A." If not, display "No, you have not entered letter A. You entered character _."
+
+
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    prompt      DB 'Enter a character: $'
+    yesMsg      DB 13,10,'Yes, you have entered letter A.$'
+    noMsg       DB 13,10,'No, you have not entered letter A. You entered character ', '$'
+    newlineStr  DB 13,10,'$'
+    inputChar   DB ?
+    dot         DB '.','$'
+NEWLINE MACRO
+    mov ah, 9
+    mov dx, offset newlineStr
+    int 21h
+ENDM
+
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+    ; Prompt user
+    mov ah, 9
+    mov dx, offset prompt
+    int 21h
+
+    ; Read character
+    mov ah, 1
+    int 21h
+    mov inputChar, al
+
+    cmp al, 'A'
+    je IS_A
+    cmp al, 'a'
+    jne NOT_A
+    IS_A:
+    mov ah, 9
+    mov dx, offset yesMsg
+    int 21h
+    jmp EXIT
+
+    ; If 'A'
+    mov ah, 9
+    mov dx, offset yesMsg
+    int 21h
+    jmp EXIT
+
+NOT_A:
+    mov ah, 9
+    mov dx, offset noMsg
+    int 21h
+
+    mov dl, inputChar
+    mov ah, 2
+    int 21h
+
+    mov ah, 9
+    mov dx, offset dot
+    int 21h
+EXIT:
+    mov ah, 4ch
+    int 21h
+MAIN ENDP
+END MAIN
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+; Filename: EXER23.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: September 12, 2025
+; Description: Asks for first, middle, and family name, then displays a greeting.
+
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    Registered  DB 'REGISTRATION FORM', 13,10,'$'
+    prompt1     DB 'Enter First Name: $'
+    prompt2     DB 13,10,'Enter Middle Name: $'
+    prompt3     DB 13,10,'Enter Family Name: $'
+    greet1      DB 13,10,'Hello, $'
+    space       DB ' $'
+    exclaim     DB '!$'
+    fname       DB 21 DUP('$')
+    mname       DB 21 DUP('$')
+    lname       DB 21 DUP('$')
+    newlineStr  DB 13,10,'$'
+
+NEWLINE MACRO
+    mov ah, 9
+    mov dx, offset newlineStr
+    int 21h
+ENDM
+
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+    mov ah, 9
+    mov dx, offset Registered
+    int 21h
+
+    NEWLINE
+    ; Prompt and read first name
+    mov ah, 9
+    mov dx, offset prompt1
+    int 21h
+
+    mov ah, 0Ah
+    lea dx, fname
+    int 21h
+
+    NEWLINE
+    ; Prompt and read middle name
+    mov ah, 9
+    mov dx, offset prompt2
+    int 21h
+
+    mov ah, 0Ah
+    lea dx, mname
+    int 21h
+
+    NEWLINE
+    ; Prompt and read family name
+    mov ah, 9
+    mov dx, offset prompt3
+    int 21h
+
+    mov ah, 0Ah
+    lea dx, lname
+    int 21h
+
+    NEWLINE
+    ; Display greeting
+    mov ah, 9
+    mov dx, offset greet1
+    int 21h
+
+    ; Print first name
+    lea si, fname
+    mov cl, [si+1]      ; length of input
+    mov ch, 0
+    add si, 2           ; point to first char
+PRINT_FNAME:
+    cmp cl, 0
+    je PRINT_MNAME
+    mov dl, [si]
+    mov ah, 2
+    int 21h
+    inc si
+    dec cl
+    jmp PRINT_FNAME
+
+PRINT_MNAME:
+    mov ah, 9
+    mov dx, offset space
+    int 21h
+
+    lea si, mname
+    mov cl, [si+1]
+    mov ch, 0
+    add si, 2
+PRINT_MNAME_LOOP:
+    cmp cl, 0
+    je PRINT_LNAME
+    mov dl, [si]
+    mov ah, 2
+    int 21h
+    inc si
+    dec cl
+    jmp PRINT_MNAME_LOOP
+
+PRINT_LNAME:
+    mov ah, 9
+    mov dx, offset space
+    int 21h
+
+    lea si, lname
+    mov cl, [si+1]
+    mov ch, 0
+    add si, 2
+PRINT_LNAME_LOOP:
+    cmp cl, 0
+    je PRINT_EXCLAIM
+    mov dl, [si]
+    mov ah, 2
+    int 21h
+    inc si
+    dec cl
+    jmp PRINT_LNAME_LOOP
+
+PRINT_EXCLAIM:
+    mov ah, 9
+    mov dx, offset exclaim
+    int 21h
+
+    ; Exit
+    mov ah, 4Ch
+    int 21h
+MAIN ENDP
+END MAIN
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+; Filename: EXER24.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: September 12, 2025
+; Description: College Enrollment Form. Gets user input for student details and displays a summary.
+
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    CIT         DB 'Cebu Institute of Technology - University',13,10,'$'
+    TITLESR     DB 'STUDENT ENROLLMENT FORM',13,10,'$'
+    promptID    DB 13,10,'Student ID Number: $'
+    promptFN    DB 13,10,'First Name: $'
+    promptMN    DB 13,10,'Middle Name: $'
+    promptLN    DB 13,10,'Last Name: $'
+    promptAddr  DB 13,10,'Address: $'
+    promptCourse DB 13,10,'Course: $'
+    promptYear  DB 13,10,'Year: $'
+    promptBMonth DB 13,10,'Birthday Month: $'
+    promptBDay  DB 13,10,'Birthday Day: $'
+    promptBYear DB 13,10,'Birthday Year: $'
+    promptEmail DB 13,10,'Email Address: $'
+
+    summary     DB 13,10,'SUMMARY $'
+    checking    DB 13,10,'Please check if all information are correct',13,10,'$'
+    labelID     DB 13,10,'ID Number: $'
+    labelFN     DB 13,10,'Full Name: $'
+    labelAddr   DB 13,10,'Address: $'
+    labelCourse DB 13,10,'Course & Year: $'
+    labelBday   DB 13,10,'Birthday: $'
+    labelEmail  DB 13,10,'Email Address: $'
+    comma       DB ', ', '$'
+    newlineStr  DB 13,10,'$'
+
+    ThankU      DB 13,10,'Thank you for enrolling at CIT-U.$'
+    copyRight   DB 13,10,'Copyright 2024$'
+    MyName      DB 13,10,'Programmer: ALLEAH DELA PENA$'
+
+    idnum       DB 16,?,15 DUP('$')
+    fname       DB 21,?,20 DUP('$')
+    mname       DB 21,?,20 DUP('$')
+    lname       DB 21,?,20 DUP('$')
+    address     DB 31,?,30 DUP('$')
+    course      DB 11,?,10 DUP('$')
+    year        DB 6,?,5 DUP('$')
+    bmonth      DB 11,?,10 DUP('$')
+    bday        DB 4,?,3 DUP('$')
+    byear       DB 6,?,5 DUP('$')
+    email       DB 51,?,50 DUP('$')
+
+SPACE MACRO
+    mov ah, 2
+    mov dl, ' '
+    int 21h
+ENDM  
+GetInput MACRO address
+    mov ah, 0Ah
+    lea dx, address
+    int 21h
+
+
+ENDM
+
+
+InputStr MACRO str
+    mov ah, 9
+    mov dx, offset str
+    int 21h
+ENDM
+
+NEWLINE MACRO
+    mov ah, 9
+    mov dx, offset newlineStr
+    int 21h
+ENDM
+
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+    ; Display form title
+    InputStr CIT
+    InputStr TITLESR
+    
+
+    ; Get Student ID Number
+    InputStr promptID
+    GetInput idnum
+
+    ; Get First Name
+    InputStr promptFN
+    GetInput fname
+
+    ; Get Middle Name
+    InputStr promptMN
+    GetInput mname
+    
+
+    ; Get Last Name
+    InputStr promptLN
+    GetInput lname
+   
+    ; Get Address
+   InputStr promptAddr
+    GetInput address
+
+    ; Get Course
+    InputStr promptCourse
+    GetInput course
+   
+    ; Get Year
+    InputStr promptYear
+    GetInput year
+   
+    ; Get Birthday Month
+    InputStr promptBMonth
+    GetInput bmonth
+    
+    ; Get Birthday Day
+    InputStr promptBDay
+    GetInput bday
+
+    ; Get Birthday Year
+    InputStr promptBYear
+    GetInput byear
+
+    ; Get Email Address
+    InputStr promptEmail
+    GetInput email
+
+
+    mov ah, 1
+    int 21h
+
+    ; Display summary
+    
+    InputStr summary
+    InputStr checking
+    ; Student ID Number
+    InputStr labelID
+    lea si, idnum
+    mov cl, [si+1]
+    mov ch, 0
+    add si, 2
+PRINT_ID:
+    cmp cl, 0
+    je PRINT_LN
+    mov dl, [si]
+    mov ah, 2
+    int 21h
+    inc si
+    dec cl
+    jmp PRINT_ID
+    
+PRINT_LN:
+    InputStr labelFN
+    lea si, lname
+    mov cl, [si+1]
+    mov ch, 0
+    add si, 2
+
+
+PRINT_LN_LOOP:
+    cmp cl, 0
+    je PRINT_FN
+    mov dl, [si]
+    mov ah, 2
+    int 21h
+    inc si
+    dec cl
+    jmp PRINT_LN_LOOP
+
+PRINT_FN:
+    InputStr comma
+    
+    lea si, fname
+    mov cl, [si+1]
+    mov ch, 0
+    add si, 2
+PRINT_FN_LOOP:
+    cmp cl, 0
+    je PRINT_MN
+    mov dl, [si]
+    mov ah, 2
+    int 21h
+    inc si
+    dec cl
+    jmp PRINT_FN_LOOP
+
+PRINT_MN:
+    
+    SPACE
+    lea si, mname
+    mov cl, [si+1]
+    mov ch, 0
+    add si, 2
+PRINT_MN_LOOP:
+    cmp cl, 0
+    je PRINT_ADDR
+    mov dl, [si]
+    mov ah, 2
+    int 21h
+    inc si
+    dec cl
+    jmp PRINT_MN_LOOP
+
+
+PRINT_ADDR:
+    mov ah, 9
+    mov dx, offset labelAddr
+    int 21h
+    lea si, address
+    mov cl, [si+1]
+    mov ch, 0
+    add si, 2
+PRINT_ADDR_LOOP:
+    cmp cl, 0
+    je PRINT_COURSE
+    mov dl, [si]
+    mov ah, 2
+    int 21h
+    inc si
+    dec cl
+    jmp PRINT_ADDR_LOOP
+
+PRINT_COURSE:
+    InputStr labelCourse
+    lea si, course
+    mov cl, [si+1]
+    mov ch, 0
+    add si, 2
+PRINT_COURSE_LOOP:
+    cmp cl, 0
+    je PRINT_YEAR
+    mov dl, [si]
+    mov ah, 2
+    int 21h
+    inc si
+    dec cl
+    jmp PRINT_COURSE_LOOP
+
+PRINT_YEAR:
+    SPACE
+    lea si, year
+    mov cl, [si+1]
+    mov ch, 0
+    add si, 2
+PRINT_YEAR_LOOP:
+    cmp cl, 0
+    je PRINT_BDAY
+    mov dl, [si]
+    mov ah, 2
+    int 21h
+    inc si
+    dec cl
+    jmp PRINT_YEAR_LOOP
+
+PRINT_BDAY:
+    InputStr labelBday
+    ; Print Birthday Month
+    lea si, bmonth
+    mov cl, [si+1]
+    mov ch, 0
+    add si, 2
+PRINT_BMONTH_LOOP:
+    
+    cmp cl, 0
+    je PRINT_BDAY_DAY
+    mov dl, [si]
+    mov ah, 2
+    int 21h
+    inc si
+    dec cl
+    jmp PRINT_BMONTH_LOOP
+
+PRINT_BDAY_DAY:
+    SPACE
+    ; Print Birthday Day
+    lea si, bday
+    mov cl, [si+1]
+    mov ch, 0
+    add si, 2
+PRINT_BDAY_LOOP:
+    cmp cl, 0
+    je PRINT_BDAY_YEAR
+    mov dl, [si]
+    mov ah, 2
+    int 21h
+    inc si
+    dec cl
+    jmp PRINT_BDAY_LOOP
+
+PRINT_BDAY_YEAR:
+    InputStr comma
+    ; Print Birthday Year
+    lea si, byear
+    mov cl, [si+1]
+    mov ch, 0
+    add si, 2
+PRINT_BYEAR_LOOP:
+    cmp cl, 0
+    je PRINT_EMAIL
+    mov dl, [si]
+    mov ah, 2
+    int 21h
+    inc si
+    dec cl
+    jmp PRINT_BYEAR_LOOP
+
+PRINT_EMAIL:
+    InputStr labelEmail
+    lea si, email
+    mov cl, [si+1]
+    mov ch, 0
+    add si, 2
+PRINT_EMAIL_LOOP:
+    cmp cl, 0
+    je PRINT_THANKS
+    mov dl, [si]
+    mov ah, 2
+    int 21h
+    inc si
+    dec cl
+    jmp PRINT_EMAIL_LOOP
+
+PRINT_THANKS:
+    NEWLINE
+    ; Display thank you message
+    InputStr ThankU
+    InputStr copyRight
+    InputStr MyName
+EXIT:
+    mov ah, 4Ch
+    int 21h
+MAIN ENDP
+END MAIN
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+; Filename: EXER25.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: September 12, 2025
+; Description: an Automated Teller Machine (ATM) main menu screen. Ask the user to input a number corresponding to an item in the main menu. Print back the number input by user and the corresponding transaction.
+
+.model small
+.stack 100h
+.data
+
+title1      db 'Cebu Institute of Technology - University$'
+title2      db 0Dh,0Ah,'Automated Teller Machine$'
+
+menu        db 0Dh,0Ah,0Dh,0Ah,'Main Menu$'
+opt1        db 0Dh,0Ah,'1 Balance Inquiry$'
+opt2        db 0Dh,0Ah,'2 Withdrawal$'
+opt3        db 0Dh,0Ah,'3 Deposit$'
+opt4        db 0Dh,0Ah,'4 Transfer$'
+opt5        db 0Dh,0Ah,'5 Bills Payment$'
+opt6        db 0Dh,0Ah,'6 Change Pin$'
+opt7        db 0Dh,0Ah,'7 Exit$'
+
+prompt      db 0Dh,0Ah,'Enter number of your choice: $'
+
+chosen1     db 0Dh,0Ah,0Dh,0Ah,'You have chosen 1 Balance Inquiry.$'
+chosen2     db 0Dh,0Ah,0Dh,0Ah,'You have chosen 2 Withdrawal.$'
+chosen3     db 0Dh,0Ah,0Dh,0Ah,'You have chosen 3 Deposit.$'
+chosen4     db 0Dh,0Ah,0Dh,0Ah,'You have chosen 4 Transfer.$'
+chosen5     db 0Dh,0Ah,0Dh,0Ah,'You have chosen 5 Bills Payment.$'
+chosen6     db 0Dh,0Ah,0Dh,0Ah,'You have chosen 6 Change Pin.$'
+chosen7     db 0Dh,0Ah,0Dh,0Ah,'You have chosen 7 Exit.$'
+
+thankyou    db 0Dh,0Ah,0Dh,0Ah,'Thank you for banking with us!$'
+copyrt      db 0Dh,0Ah,'Copyright 2024$'
+programmer  db 0Dh,0Ah,'Programmer: ALLEAH DELA PENA$'
+
+.code
+main proc
+    mov ax, @data
+    mov ds, ax
+
+    ; --- Print Titles ---
+    mov ah, 9
+    mov dx, offset title1
+    int 21h
+    mov dx, offset title2
+    int 21h
+
+    ; --- Print Menu ---
+    mov dx, offset menu
+    int 21h
+    mov dx, offset opt1
+    int 21h
+    mov dx, offset opt2
+    int 21h
+    mov dx, offset opt3
+    int 21h
+    mov dx, offset opt4
+    int 21h
+    mov dx, offset opt5
+    int 21h
+    mov dx, offset opt6
+    int 21h
+    mov dx, offset opt7
+    int 21h
+
+    ; --- Prompt User ---
+    mov dx, offset prompt
+    int 21h
+
+    ; Get single key (choice)
+    mov ah, 1
+    int 21h
+    mov bl, al         ; store choice
+
+   
+
+    ; --- Display chosen option ---
+    cmp bl, '1'
+    je opt_choice1
+    cmp bl, '2'
+    je opt_choice2
+    cmp bl, '3'
+    je opt_choice3
+    cmp bl, '4'
+    je opt_choice4
+    cmp bl, '5'
+    je opt_choice5
+    cmp bl, '6'
+    je opt_choice6
+    cmp bl, '7'
+    je opt_choice7
+    jmp done
+
+opt_choice1:
+    mov dx, offset chosen1
+    jmp print_choice
+opt_choice2:
+    mov dx, offset chosen2
+    jmp print_choice
+opt_choice3:
+    mov dx, offset chosen3
+    jmp print_choice
+opt_choice4:
+    mov dx, offset chosen4
+    jmp print_choice
+opt_choice5:
+    mov dx, offset chosen5
+    jmp print_choice
+opt_choice6:
+    mov dx, offset chosen6
+    jmp print_choice
+opt_choice7:
+    mov dx, offset chosen7
+
+print_choice:
+    mov ah, 9
+    int 21h
+
+done:
+    ; --- Footer ---
+    mov dx, offset thankyou
+    mov ah, 9
+    int 21h
+    mov dx, offset copyrt
+    int 21h
+    mov dx, offset programmer
+    int 21h
+
+    ; Exit program
+    mov ah, 4Ch
+    int 21h
+main endp
+end main
+
+___________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+; Filename: EXER26.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: September 12, 2025
+; Description: an Assembly Language program based on the sample output. Before the form displays, ask the user to input all the needed data as shown on the summary form. Afterwards, display the form with all the data entered by the user.
+
+putc MACRO char
+    mov ah, 02h
+    mov dl, char
+    int 21h
+ENDM
+renderc MACRO char, page, color, write
+    mov ah, 09h 
+    mov al, char
+    mov bh, page
+    mov bl, color
+    mov cx, write
+    int 10h
+ENDM
+setcursor MACRO row, col
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, row
+    mov dl, col
+    int 10h
+ENDM
+colorz MACRO color, write
+    mov ah, 09h 
+    mov bl, color
+    mov cx, write
+    int 10h
+ENDM
+
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    
+	txt_0_R1_C22 db "Cebu Institute of Technology - University",'$'
+	txt_1_R3_C26 db "VEHICLE STICKER APPLICATION FORM",'$'
+	txt_2_R5_C26 db "  Please fill out form below.",'$'
+	txt_3_R7_C4 db "Personnel Type:                      Vehicle Sticker Type:",'$'
+	txt_4_R9_C4 db "Name of Applicant:                   ID Number:",'$'
+	txt_5_R11_C4 db "Mobile Number:                       Address:",'$'
+	txt_6_R13_C4 db "Vehicle Brand:                       Plate Number:",'$'
+	txt_7_R15_C4 db "Vehicle Color:                       Vehicle Type:",'$'
+	txt_8_R18_C36 db "SUBMIT",'$'
+	txt_9_R21_C20 db "Copyright 2024 ALLEAH DELA PENA",'$'
+	txt_10_R23_C31 db "Thank you!",'$'
+	arrow       db "V",'$'
+
+    CIT         DB 'Cebu Institute of Technology - University',13,10,'$'
+    TITLESR     DB 'STUDENT ENROLLMENT FORM',13,10,'$'
+    promptPer   DB 13,10,'Personnel type: $'
+    promptAppl  DB 13,10,'Name of Applicant/Driver: $'
+    promptNum   DB 13,10,'Mobile Number: $'
+    promptBrand DB 13,10,'Vehicle Make(s)/Brand: $'
+    promptColor DB 13,10,'Vehicle Color: $'
+    promptStkr  DB 13,10,'Vehicle Sticker Type: $'
+    promptID    DB 13,10,'ID Number: $'
+    promptAddr  DB 13,10,'Address: $'
+    promptPlate DB 13,10,'Plate Number: $'
+    promptVehicle DB 13,10,'Vehicle Type: $'
+
+
+    summary     DB 13,10,'SUMMARY $'
+    labelCIT    DB 'Cebu Institute of Technology - University','$'
+    labelVeh    DB 'VEHICLE STICKER APPLICATION FORM','$'
+    labelForm   DB 'Please fill out the form below','$'
+    checking    DB 13,10,'Please check if all information are correct',13,10,'$'
+    labelID     DB 13,10,'ID Number: $'
+    labelPer    DB 'Personnel Type: $'
+    labelAddr   DB 13,10,'Address: $'
+    labelCourse DB 13,10,'Course & Year: $'
+    labelBday   DB 13,10,'Birthday: $'
+    labelEmail  DB 13,10,'Email Address: $'
+    comma       DB ', ', '$'
+    newlineStr  DB 13,10,'$'
+
+    ThankU      DB 13,10,'Thank you for enrolling at CIT-U.$'
+    copyRight   DB 13,10,'Copyright 2024$'
+    MyName      DB 13,10,'Programmer: ALLEAH DELA PENA$'
+
+    Personnel   DB 21, 0, 20 DUP(0)
+    Applicant   DB 31, 0, 30 DUP(0)
+    MobileNum   DB 16, 0, 15 DUP(0)
+    Brand       DB 21, 0, 20 DUP(0)
+    Color       DB 16, 0, 15 DUP(0)
+    Sticker     DB 16, 0, 15 DUP(0)
+    idnum       DB 16, 0, 15 DUP(0)
+    plate       DB 16, 0, 15 DUP(0)
+    vehicle     DB 16, 0, 15 DUP(0)
+    address     DB 31, 0, 30 DUP(0)
+PrintInput MACRO buffer, row, col, attr
+    local .print_loop, .done
+
+    mov ah, 02h
+    mov bh, 0
+    mov dh, row
+    mov dl, col
+    int 10h
+
+    mov si, offset buffer
+    mov cl, [si+1]   ; actual input length
+    xor ch, ch
+    add si, 2        ; skip metadata
+
+.print_loop:
+    cmp cx, 0
+    je .done
+    mov al, [si]
+    mov ah, 0Eh
+    mov bh, 0
+    mov bl, attr
+    int 10h
+    inc si
+    dec cx
+    jmp .print_loop
+.done:
+ENDM
+
+
+
+
+
+
+RESET MACRO
+    mov ah,09h
+    mov bl,0fh
+    mov cx,1
+    int 10h
+endm    
+RED MACRO
+    mov ah,09h
+    mov bl,0Fh 
+    mov cx,1
+    int 10h
+ 
+    mov ah,02h
+    mov dl,219d
+    int 21h
+ 
+    mov ah,09h
+    mov bl,04H
+    mov cx,78
+    int 10h
+ 
+    mov ah,02h
+    mov dl,219d
+    mov cx,78
+    draw_line1:
+        int 21h
+        loop draw_line1
+ 
+    mov ah,09h
+    mov bl,0Fh
+    mov cx,1
+    int 10h
+ 
+    mov ah,02h
+    mov dl,219d
+    int 21h
+ENDM    
+SPACE MACRO
+    mov ah, 2
+    mov dl, ' '
+    int 21h
+ENDM  
+GetInput MACRO address
+    lea dx, address
+    mov ah,0Ah
+    int 21h
+
+
+ENDM
+
+
+InputStr MACRO str
+    mov ah, 9
+    mov dx, offset str
+    int 21h
+ENDM
+
+NEWLINE MACRO
+    mov ah, 9
+    mov dx, offset newlineStr
+    int 21h
+ENDM
+
+.CODE
+Start:
+
+    MOV AX, @DATA
+    MOV DS, AX
+
+    mov ah, 00h
+    mov al, 03h
+    int 10h
+
+    ; Display form title
+    InputStr CIT
+    InputStr TITLESR
+    
+
+    ; Get Personnel Type
+    InputStr promptPer
+    GetInput Personnel
+    
+
+    ; Get Applicant/Driver Name
+    InputStr promptAppl
+    GetInput Applicant
+
+    ; Get Mobile Number
+    InputStr promptNum
+    GetInput MobileNum
+
+    ; Get Vehicle Brand
+    InputStr promptBrand
+    GetInput Brand
+
+    ; Get Vehicle Color
+    InputStr promptColor
+    GetInput Color
+
+    ; Get Vehicle Sticker Type
+    InputStr promptStkr
+    GetInput Sticker
+
+   ; Get Student ID Number
+    InputStr promptID
+    GetInput idnum
+
+   
+    ; Get Address
+   InputStr promptAddr
+    GetInput address
+
+    ; Get Plate Number
+    InputStr promptPlate
+    GetInput plate
+
+    ; Get Vehicle Type
+    InputStr promptVehicle
+    GetInput vehicle
+
+    ; Wait for user to press a key before displaying summary
+	NEWLINE
+	InputStr summary
+    
+    NEWLINE
+
+
+    mov ah, 1
+    int 21h
+
+    ; Display summary
+    
+    
+
+    mov ax, @data
+    mov ds, ax
+
+    ; Set to video mode 
+    mov ah, 00h
+    mov al, 03h ; 80x25 color text mode
+    int 10h
+ ;outer   
+
+	setcursor 0, 0
+	renderc 20h, 0, 7fh, 4
+
+	setcursor 0, 4
+	renderc 20h, 0, 44h, 72
+
+	setcursor 0, 76
+	renderc 20h, 0, 7fh, 4
+
+; first row
+	setcursor 1, 0
+	renderc 20h, 0, 7fh, 4
+
+	setcursor 1, 4
+	renderc 20h, 0, 44h, 17
+
+	setcursor 1, 21
+	renderc 20h, 0, 4fh, 1
+
+	setcursor 1, 22
+	colorz 4fh, 41
+	mov ah, 09h
+	mov dx, offset txt_0_R1_C22
+	int 21h
+
+    
+
+	setcursor 1, 63
+	renderc 20h, 0, 4eh, 4
+
+	setcursor 1, 67
+	renderc 20h, 0, 44h, 9
+
+	setcursor 1, 76
+	renderc 20h, 0, 7fh, 4
+
+; second row
+	setcursor 2, 0
+	renderc 20h, 0, 7fh, 4
+
+	setcursor 2, 4
+	renderc 20h, 0, 44h, 72
+
+	setcursor 2, 76
+	renderc 20h, 0, 7fh, 4
+
+	setcursor 3, 0
+	renderc 20h, 0, 7fh, 4
+
+	setcursor 3, 4
+	renderc 20h, 0, 44h, 5
+
+	setcursor 3, 9
+	renderc 20h, 0, 4eh, 8
+
+	setcursor 3, 17
+	renderc 20h, 0, 4fh, 9
+; third row
+	setcursor 3, 26
+	colorz 4fh, 32
+	mov ah, 09h
+	mov dx, offset txt_1_R3_C26
+	int 21h
+
+	setcursor 3, 58
+	renderc 20h, 0, 4eh, 10
+
+	setcursor 3, 68
+	renderc 20h, 0, 44h, 8
+
+	setcursor 3, 76
+	renderc 20h, 0, 7fh, 4
+
+; fourth row
+	setcursor 4, 0
+	renderc 20h, 0, 7fh, 4
+
+	setcursor 4, 4
+	renderc 20h, 0, 44h, 5
+
+	setcursor 4, 9
+	renderc 20h, 0, 4eh, 8
+
+	setcursor 4, 17
+	renderc 20h, 0, 4fh, 36
+
+	setcursor 4, 53
+	renderc 20h, 0, 4eh, 15
+
+	setcursor 4, 68
+	renderc 20h, 0, 44h, 8
+
+	setcursor 4, 76
+	renderc 20h, 0, 7fh, 4
+
+; fifth row
+	setcursor 5, 0
+	renderc 20h, 0, 7fh, 4
+
+	setcursor 5, 4
+	renderc 20h, 0, 44h, 5
+
+	setcursor 5, 9
+	renderc 20h, 0, 4eh, 8
+
+	setcursor 5, 17
+	renderc 20h, 0, 4fh, 9
+
+	setcursor 5, 26
+	colorz 4eh, 29
+	mov ah, 09h
+	mov dx, offset txt_2_R5_C26
+	int 21h
+
+
+	setcursor 5, 55
+	renderc 20h, 0, 4eh, 12
+
+	setcursor 5, 67
+	renderc 20h, 0, 44h, 9
+
+	setcursor 5, 76
+	renderc 20h, 0, 7fh, 4
+
+; sixth row
+	setcursor 6, 0
+	renderc 20h, 0, 7fh, 80
+
+; seventh row
+	setcursor 7, 0
+	renderc 20h, 0, 7fh, 4
+
+	setcursor 7, 4
+	colorz 70h, 59
+	mov ah, 09h
+	mov dx, offset txt_3_R7_C4
+	int 21h
+
+
+	setcursor 7, 23
+	renderc 20h, 0, 4eh, 17
+    PrintInput Personnel, 7, 24, 4eh
+
+	setcursor 7, 39
+	colorz 6Fh, 1
+	mov ah, 09h
+	mov dx, offset arrow
+	int 21h
+
+    setcursor 7, 62
+	renderc 20h, 0, 7fh, 18
+    
+	setcursor 7, 63
+	renderc 20h, 0, 4eh, 18
+	PrintInput Sticker, 7, 64, 4eh
+
+	setcursor 7, 75
+	colorz 6Fh, 1
+	mov ah, 09h
+	mov dx, offset arrow
+	int 21h
+
+	setcursor 7, 76
+	renderc 20h, 0, 7fh, 18
+	
+; eighth row
+	setcursor 8, 0
+	renderc 20h, 0, 7fh, 80
+; ninth row
+	setcursor 9, 0
+	renderc 20h, 0, 7fh, 4
+
+	setcursor 9, 4
+	colorz 70h, 47
+    
+
+	mov ah, 09h
+	mov dx, offset txt_4_R9_C4
+	int 21h
+
+	setcursor 9, 23
+	renderc 20h, 0, 4eh, 17
+    PrintInput Applicant, 9, 24, 4eh
+	
+    setcursor 9, 51
+	renderc 20h, 0, 7fh, 18
+
+	setcursor 9, 63
+	renderc 20h, 0, 4eh, 18
+	PrintInput idnum, 9, 64, 4eh
+
+	setcursor 9, 76
+	renderc 20h, 0, 7fh, 18
+; tenth row	
+	setcursor 10, 0
+	renderc 20h, 0, 7fh, 80
+
+    
+; eleventh row
+	setcursor 11, 0
+	renderc 20h, 0, 7fh, 4
+
+	setcursor 11, 4
+	colorz 70h, 45
+	mov ah, 09h
+	mov dx, offset txt_5_R11_C4
+	int 21h
+
+	setcursor 11, 23
+	renderc 20h, 0, 4eh, 17
+	PrintInput MobileNum, 11, 24, 4eh
+
+	setcursor 11, 49
+	renderc 20h, 0, 7fh, 18
+
+	setcursor 11, 63
+	renderc 20h, 0, 4eh, 31
+	PrintInput address, 11, 64, 4eh
+
+	setcursor 11, 76
+	renderc 20h, 0, 7fh, 18
+; twelfth row	
+	setcursor 12, 0
+	renderc 20h, 0, 7fh, 80
+
+; thirteenth row
+	setcursor 13, 0
+	renderc 20h, 0, 7fh, 4
+
+	setcursor 13, 4
+	colorz 70h, 50
+	mov ah, 09h
+	mov dx, offset txt_6_R13_C4
+	int 21h
+	
+	setcursor 13, 23
+	renderc 20h, 0, 4eh, 17
+	PrintInput Brand, 13, 24, 4eh
+
+	setcursor 13, 54
+	renderc 20h, 0, 7fh, 18
+
+	setcursor 13, 63
+	renderc 20h, 0, 4eh, 31
+	PrintInput plate, 13, 64, 4eh
+
+	setcursor 13, 76
+	renderc 20h, 0, 7fh, 18
+; fourteenth row
+	setcursor 14, 0
+	renderc 20h, 0, 7fh, 80
+; fifteenth row
+	setcursor 15, 0
+	renderc 20h, 0, 7fh, 4
+
+	setcursor 15, 4
+	colorz 70h, 50
+	mov ah, 09h
+	mov dx, offset txt_7_R15_C4
+	int 21h
+	
+	setcursor 15, 23
+	renderc 20h, 0, 4eh, 17
+    PrintInput Color, 15, 24, 4eh
+
+	setcursor 15, 39
+	colorz 6Fh, 1
+	mov ah, 09h
+	mov dx, offset arrow
+	int 21h
+
+    setcursor 15, 54
+	renderc 20h, 0, 7fh, 18
+
+	setcursor 15, 63
+	renderc 20h, 0, 4eh, 18
+	PrintInput Vehicle, 15, 64, 4eh
+
+	setcursor 15, 75
+	colorz 6Fh, 1
+	mov ah, 09h
+	mov dx, offset arrow
+	int 21h
+
+	setcursor 15, 76
+	renderc 20h, 0, 7fh, 18
+; sixteenth row
+
+	setcursor 16, 0
+	renderc 20h, 0, 7fh, 80
+; seventeenth row
+	setcursor 17, 0
+	renderc 20h, 0, 7fh, 31
+
+	setcursor 17, 31
+	renderc 20h, 0, 7eh, 2
+
+	setcursor 17, 33
+	renderc 20h, 0, 44h, 11
+
+	setcursor 17, 44
+	renderc 20h, 0, 7eh, 6
+
+	setcursor 17, 50
+	renderc 20h, 0, 7fh, 30
+; eighteenth row
+	setcursor 18, 0
+	renderc 20h, 0, 7fh, 31
+
+	setcursor 18, 31
+	renderc 20h, 0, 7eh, 2
+
+	setcursor 18, 33
+	renderc 20h, 0, 44h, 2
+
+	setcursor 18, 35
+	renderc 20h, 0, 4eh, 1
+
+	setcursor 18, 36
+	colorz 4eh, 6
+	mov ah, 09h
+	mov dx, offset txt_8_R18_C36
+	int 21h
+
+	setcursor 18, 42
+	renderc 20h, 0, 4eh, 1
+
+	setcursor 18, 43
+	renderc 20h, 0, 44h, 1
+
+	setcursor 18, 44
+	renderc 20h, 0, 7eh, 6
+
+	setcursor 18, 50
+	renderc 20h, 0, 7fh, 30
+; nineteenth row
+	setcursor 19, 0
+	renderc 20h, 0, 7fh, 31
+
+	setcursor 19, 31
+	renderc 20h, 0, 7eh, 2
+
+	setcursor 19, 33
+	renderc 20h, 0, 44h, 11
+
+	setcursor 19, 44
+	renderc 20h, 0, 7eh, 5
+
+	setcursor 19, 49
+	renderc 20h, 0, 7fh, 31
+; twentieth row
+	setcursor 20, 0
+	renderc 20h, 0, 7fh, 31
+
+	setcursor 20, 31
+	renderc 20h, 0, 7eh, 1
+
+	setcursor 20, 32
+	renderc 20h, 0, 74h, 17
+
+	setcursor 20, 49
+	renderc 20h, 0, 7fh, 31
+; twenty-first row
+	setcursor 21, 0
+	renderc 20h, 0, 7fh, 19
+
+	setcursor 21, 19
+	renderc 20h, 0, 70h, 1
+
+	setcursor 21, 20
+	colorz 70h, 31
+	mov ah, 09h
+	mov dx, offset txt_9_R21_C20
+	int 21h
+
+	setcursor 21, 51
+	renderc 20h, 0, 7fh, 29
+; twenty-second row
+	setcursor 22, 0
+	renderc 20h, 0, 7fh, 38
+
+	setcursor 22, 38
+	renderc 20h, 0, 74h, 11
+
+	setcursor 22, 49
+	renderc 20h, 0, 7fh, 31
+; twenty-third row
+	setcursor 23, 0
+	renderc 20h, 0, 0eh, 31
+
+	setcursor 23, 34
+	colorz 0eh, 10
+	mov ah, 09h
+	mov dx, offset txt_10_R23_C31
+	int 21h
+
+	setcursor 23, 51
+	renderc 20h, 0, 0eh, 40
+
+    mov ah, 4Ch      ; DOS exit function
+    mov al, 0        ; Return code 0
+    int 21h            ; Call DOS interrupt
+end start ; end program

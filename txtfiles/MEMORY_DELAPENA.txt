@@ -1,0 +1,53 @@
+(1) Types of Computer Memory displayed in the videos
+
+	1. RAM (Random Access Memory)
+
+	2. Hard Disk Drive (HDD)
+
+	3. Solid State Drive (SSD)
+
+	4. NAND Flash Memory (within SSDs)
+
+	5. Microchips (which are used to produce memory chips)
+
+(2) Explanation and Materials Used
+
+1. RAM (Random Access Memory)
+
+	-How it works:
+		The video "How Does Computer Memory Work?" states that RAM holds data temporarily in use by the CPU so it can access it quickly. Each bit of information is kept in small electric pieces on a chip.
+
+	-Material used to store data:
+		RAM consists of millions of tiny transistors and capacitors on a silicon chip. The capacitor stores an electric charge to store a 1, and nothing to store a 0. Since it requires electricity to keep the charge, all data is erased when power is removed.
+
+2. Hard Disk Drive (HDD)
+
+	-How it works:
+		In "How Do Hard Disk Drives Work?", information is stored magnetically on rotating metal disks. A small read/write head rides mere inches above the disk surface and flips magnetic directions to encode 1s and 0s.
+
+	-Material used to store data:
+		Each platter is covered with a magnetic substance, and there are actuators and motors in the drive for rotating the disks as well as positioning the heads. Since it employs magnetism, data is stored even without power.
+
+3. Solid State Drive (SSD)
+
+	-How it works:
+		"How Do SSDs Work?" states that SSDs retain data electronically rather than magnetically or mechanically. It employs flash memory cells internally that capture or discharge electric charge to hold bits. There are no moving components.
+
+	-Material used to save data:
+		SSDs employ silicon-based memory chips composed of transistors. Individual memory cells can hold electrons in a unique layer, and the presence or lack of electrons dictates if it's a 1 or a 0.
+
+4. NAND Flash Memory
+
+	-How it works:
+		The video "How Does NAND Flash Work?" demonstrates that NAND flash is the storage technology primarily utilized in SSDs and USB drives. Every cell stores bits by confining electrons in a floating gate within a transistor. The charge remains even without power.
+
+	-Material used to store data:
+		It employs silicon transistors with insulating oxide layers and a floating gate to store electrical charge. Current NAND stores more than one bit per cell by managing the level of trapped charge.
+
+5. Microchips (How They Are Made)
+
+	-How it works:
+		In "How Are Microchips Made?", we learn how memory and processor chips begin as pure silicon wafers. Through steps such as photolithography, etching, and doping, billions of transistors are etched onto the silicon to create functional circuits like RAM or flash memory.
+
+	-Material used to store data:
+		The foundation material is silicon, which is sliced from massive cylindrical crystals. Additional materials such as metal layers (for wiring) and insulating oxides are deposited to form up the chip layers.

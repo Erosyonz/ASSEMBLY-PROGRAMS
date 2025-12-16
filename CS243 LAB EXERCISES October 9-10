@@ -1,0 +1,755 @@
+; Filename: EXER36.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: October 10, 2025
+; Description: Using a loop, vertically display the numbers 1 to 10.
+
+.MODEL SMALL
+.STACK 100h
+.DATA
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+    MOV AH, 00h
+    MOV AL, 03h
+    INT 10h
+    
+    MOV CX, 10          ; Loop counter from 1 to 10
+    MOV BX, 1           ; Start with number 1
+    
+DISPLAY_LOOP:
+    ; Convert number in BX to ASCII and display
+    MOV AX, BX
+    CALL PRINT_NUM       ; Print number (supports 2 digits)
+    
+    ; Move to next line
+    MOV AH, 02h
+    MOV DL, 0Dh          ; Carriage return
+    INT 21h
+    MOV DL, 0Ah          ; Line feed
+    INT 21h
+
+    INC BX
+    LOOP DISPLAY_LOOP
+    
+    ; Exit program
+    MOV AH, 4Ch
+    INT 21h
+MAIN ENDP
+
+;------------------------------------------
+; PRINT_NUM - prints number in AX (1–99)
+;------------------------------------------
+PRINT_NUM PROC
+    PUSH AX
+    PUSH BX
+    PUSH CX
+    PUSH DX
+
+    MOV CX, 0
+    MOV BX, 10
+
+CONVERT_LOOP:
+    XOR DX, DX
+    DIV BX
+    PUSH DX
+    INC CX
+    CMP AX, 0
+    JNZ CONVERT_LOOP
+
+PRINT_LOOP:
+    POP DX
+    ADD DL, '0'
+    MOV AH, 02h
+    INT 21h
+    LOOP PRINT_LOOP
+
+    POP DX
+    POP CX
+    POP BX
+    POP AX
+    RET
+PRINT_NUM ENDP
+
+END MAIN
+
+; Filename: EXER37.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: October 10, 2025
+; Description: Using a loop, horizontally display the numbers 1 to 20, WIth space between each number.
+
+.MODEL SMALL
+.STACK 100h
+.DATA
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+    MOV AH, 00h
+    MOV AL, 03h
+    INT 10h
+
+    MOV CX, 20      ; Loop 20 times for numbers 1–20
+    MOV BX, 1       ; Start number = 1
+
+DISPLAY_LOOP:
+    MOV AX, BX
+    CALL PRINT_NUM  ; Print number in AX
+
+    ; Print space (except after last number)
+    CMP BX, 20
+    JE SKIP_SPACE
+    MOV DL, ' '
+    MOV AH, 02h
+    INT 21h
+
+SKIP_SPACE:
+    INC BX          ; Next number
+    LOOP DISPLAY_LOOP
+
+    ; Exit program
+    MOV AH, 4Ch
+    INT 21h
+MAIN ENDP
+
+;------------------------------------------
+; PRINT_NUM - prints number in AX (1–99)
+;------------------------------------------
+PRINT_NUM PROC
+    PUSH AX
+    PUSH BX
+    PUSH CX
+    PUSH DX
+
+    MOV CX, 0
+    MOV BX, 10
+
+CONVERT_LOOP:
+    XOR DX, DX
+    DIV BX
+    PUSH DX
+    INC CX
+    CMP AX, 0
+    JNZ CONVERT_LOOP
+
+PRINT_LOOP:
+    POP DX
+    ADD DL, '0'
+    MOV AH, 02h
+    INT 21h
+    LOOP PRINT_LOOP
+
+    POP DX
+    POP CX
+    POP BX
+    POP AX
+    RET
+PRINT_NUM ENDP
+
+END MAIN
+
+; Filename: EXER38.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: October 10, 2025
+; Description: Ask user to input a number from 1 to B. Display
+; error message if number entered is less than 1 or
+; greater than 8. If input is correct, horizontally
+; display the numbers, with space between each
+; number, from 1 to the number entered by user.
+
+.MODEL SMALL
+.STACK 100h
+.DATA
+    prompt  DB 'Enter a number from 1 to 8: $'
+    error   DB 0Dh,0Ah,'Error: Number out of range!$'
+    newline DB 0Dh,0Ah,'$'
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+    
+    MOV AH, 00h
+    MOV AL, 03h
+    INT 10h
+
+INPUT_LOOP:
+    ; Display prompt
+    MOV AH, 09h
+    LEA DX, prompt
+    INT 21h
+
+    ; Get user input (single key)
+    MOV AH, 01h
+    INT 21h
+    SUB AL, '0'          ; Convert ASCII -> number (1–8)
+    
+    
+
+    ; Validate range 1–8
+    CMP AL, 1
+    JL SHOW_ERROR
+    CMP AL, 8
+    JG SHOW_ERROR
+
+    ; Valid input
+    MOV CL, AL           ; CL = limit
+    MOV BL, 1            ; BL = current number
+
+    MOV AH, 09h
+    LEA DX, newline
+    INT 21h
+DISPLAY_LOOP:
+    
+    ; Print current number
+    MOV AL, BL
+    ADD AL, '0'
+    MOV DL, AL
+    MOV AH, 02h
+    INT 21h
+
+    ; If not last, print space
+    CMP BL, CL
+    JE FINISH_DISPLAY
+    MOV DL, ' '
+    MOV AH, 02h
+    INT 21h
+
+    INC BL
+    JMP DISPLAY_LOOP
+
+FINISH_DISPLAY:
+    ; Print newline
+    MOV AH, 09h
+    LEA DX, newline
+    INT 21h
+
+    JMP INPUT_LOOP       ; Ask again
+
+SHOW_ERROR:
+    MOV AH, 09h
+    LEA DX, error
+    INT 21h
+    LEA DX, newline
+    INT 21h
+    JMP INPUT_LOOP
+
+    ; Exit program (won’t reach here normally)
+    MOV AH, 4Ch
+    INT 21h
+MAIN ENDP
+END MAIN
+
+; Filename: EXER39.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: October 10, 2025
+; Description: Repeatedly ask user to input a single digit whole
+; number until the number entered is a zero. Display
+; "Thank you." When the number entered is zero.
+
+.MODEL SMALL
+.STACK 100h
+.DATA
+    prompt DB 0Dh,0Ah,'Enter a single digit number: $'
+    thank_you DB 0Dh,0Ah,'Thank you.$'
+    newline DB 0Dh,0Ah,'$'
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+      MOV AH, 00h
+    MOV AL, 03h
+    INT 10h
+    
+INPUT_LOOP:
+    ; Display prompt
+    MOV AH, 09h
+    LEA DX, prompt
+    INT 21h
+    
+    ; Get input
+    MOV AH, 01h
+    INT 21h
+
+   
+    ; Check if zero
+    CMP AL, '0'
+    JE EXIT_PROGRAM
+    
+    MOV AH, 09h
+    LEA DX, newline
+    INT 21h 
+    ; Continue loop
+    JMP INPUT_LOOP
+    
+    
+EXIT_PROGRAM:
+    ; Display thank you
+    MOV AH, 09h
+    LEA DX, newline
+    INT 21h 
+    MOV AH, 09h
+    LEA DX, thank_you
+    INT 21h
+    
+    ; Exit
+    MOV AH, 4Ch
+    INT 21h
+MAIN ENDP
+END MAIN
+
+; Filename: EXER40.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: October 10, 2025
+; Description: Repeatedly display an ATM main menu until the user
+; presses "e" for Exit. Pressing a valid letter from
+; the main menu will display the name of the ATM
+; operation. Display INVALID INPUT! if wrong choice.
+
+.MODEL SMALL
+.STACK 100h
+.DATA
+    menu DB 0Dh,0Ah,'CIT-U ATM',0Dh,0Ah
+         DB 'a. Balance Inquiry',0Dh,0Ah
+         DB 'b. Deposit',0Dh,0Ah
+         DB 'c. Withdrawal',0Dh,0Ah
+         DB 'd. Bills Payment',0Dh,0Ah
+         DB 'e. Exit',0Dh,0Ah
+         DB 0Dh,0Ah,'Enter choice: $',0Dh,0Ah
+    
+    balance_msg DB 0Dh,0Ah,'Balance Inquiry',0Dh,0Ah,'$'
+    deposit_msg DB 0Dh,0Ah,'Deposit',0Dh,0Ah,'$'
+    withdrawal_msg DB 0Dh,0Ah,'Withdrawal',0Dh,0Ah,'$'
+    bills_msg DB 0Dh,0Ah,'Bills Payment',0Dh,0Ah,'$'
+    exit_msg DB 0Dh,0Ah,'Exit. Thank you!',0Dh,0Ah,'$'
+    invalid_msg DB 0Dh,0Ah,'INVALID INPUT!',0Dh,0Ah,'$'
+    newline DB 0Dh,0Ah,'$'
+    
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+    
+MENU_LOOP:
+    ; Display menu
+    MOV AH, 09h
+    LEA DX, menu
+    INT 21h
+    
+    ; Get choice
+    MOV AH, 01h
+    INT 21h
+    
+    ; Process choice
+    CMP AL, 'a'
+    JE BALANCE
+    CMP AL, 'b'
+    JE DEPOSIT
+    CMP AL, 'c'
+    JE WITHDRAWAL
+    CMP AL, 'd'
+    JE BILLS
+    CMP AL, 'e'
+    JE EXIT
+    JMP INVALID
+    
+BALANCE:
+    MOV AH, 09h
+    LEA DX, newline
+    INT 21h  
+
+    MOV AH, 09h
+    LEA DX, balance_msg
+    INT 21h
+    JMP MENU_LOOP
+    
+DEPOSIT:
+    MOV AH, 09h
+    LEA DX, newline
+    INT 21h 
+
+    MOV AH, 09h
+    LEA DX, deposit_msg
+    INT 21h
+    JMP MENU_LOOP
+    
+WITHDRAWAL:
+    MOV AH, 09h
+    LEA DX, newline
+    INT 21h 
+
+    MOV AH, 09h
+    LEA DX, withdrawal_msg
+    INT 21h
+    JMP MENU_LOOP
+    
+BILLS:
+    MOV AH, 09h
+    LEA DX, newline
+    INT 21h  
+
+    MOV AH, 09h
+    LEA DX, bills_msg
+    INT 21h
+    JMP MENU_LOOP
+    
+INVALID:
+    MOV AH, 09h
+    LEA DX, newline
+    INT 21h 
+
+    MOV AH, 09h
+    LEA DX, invalid_msg
+    INT 21h
+    JMP MENU_LOOP
+    
+EXIT:
+    MOV AH, 09h
+    LEA DX, newline
+    INT 21h 
+
+    MOV AH, 09h
+    LEA DX, exit_msg
+    INT 21h
+    
+    MOV AH, 4Ch
+    INT 21h
+MAIN ENDP
+END MAIN
+
+; Filename: EXER41.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: October 10, 2025
+; Description: Input two digit numbers and add the two number.
+
+Data segment  
+
+ msg db 0dh,0ah,"Enter first number: $"  
+ msg1 db 0dh,0ah,"Enter second number: $"  
+ result db 0dh,0ah,"The Result is: $"  
+
+Data ends  
+
+Code segment  
+ assume CS:Code,DS:Data  
+
+start:  
+ mov ax,Data ; Move Data to Data Segment add8  
+ mov DS,ax  
+
+ mov dx,offset msg ; Display contents of variable msg  
+ mov ah,09h  
+ int 21h  
+
+ mov ah,01h ; To accept input and store ASCII value into al  
+ int 21h  
+
+ sub al,30h ; Accept 10's place of the Number  
+ mov bl,al  
+ rol bl,4  
+
+ mov ah,01h ; To accept input and store ASCII value into al  
+ int 21h  
+
+ sub al,30h ; Accept unit's place of Number  
+
+ add bl,al ; Get the number by adding 10's and unit's place  
+
+ mov dx,offset msg1 ; Display contents of variable msg1  
+ mov ah,09h  
+ int 21h  
+
+ mov ah,01h ; To accept input and store ASCII value into al  
+ int 21h  
+
+ sub al,30h ; Accept 10's place of the Number  
+ mov cl,al  
+ rol cl,4  
+
+ mov ah,01h ; To accept input and store ASCII value into al  
+ int 21h  
+
+ sub al,30h ; Accept unit's place of Number  
+
+ add cl,al ; Get the number by adding 10's and unit's place  
+
+ add bl,cl ; Add the two accepted Number's  
+
+ mov dx,offset result ; Display contents of string result  
+ mov ah,09h  
+ int 21h  
+
+ mov cl,bl ; Store the value of the Result  
+
+ and bl,0f0h ; Isolate 10's place of Result  
+ ror bl,4  
+
+ call AsciiConv ; Convert to ASCII to display  
+
+ mov dl,bl ; Display a Number/Alphabet  
+ mov ah,02h  
+ int 21h  
+
+ mov bl,cl ; Retrieve original Result  
+
+ and bl,0fh ; Isolate unit's place of Result  
+
+ call AsciiConv ; Convert to ASCII to display  
+
+ mov dl,bl ; Display a Number/Alphabet  
+ mov ah,02h  
+ int 21h  
+
+ mov ah,4ch ; Terminate the program  
+ int 21h  
+
+ AsciiConv proc ; Compare to 0a if it is less than A then we need to add only 30  
+  cmp bl,0ah ; If it is greater than or equal to 0a then we also need to add 07  
+  jc skip  
+  add bl,07h  
+  skip: add bl,30h  
+  ret  
+  endp  
+
+Code ends  
+end start  
+
+;=====================================================================
+; Program Title : EXER42.ASM
+; Description   : This program asks the user to input a 5-digit number
+;                 and then displays the same number back to the screen.
+; Author        : ALLEAH DELA PENA
+; Assembler     : Turbo Assembler (TASM)
+; Environment   : DOSBox (16-bit real mode)
+;=====================================================================
+
+.MODEL SMALL             ; Small memory model (code < 64K, data < 64K)
+.STACK 100h              ; Reserve 256 bytes for stack
+.DATA                    ; Begin data segment
+
+    ;---------------------------------------------------------------
+    ; Define the messages and data storage
+    ;---------------------------------------------------------------
+    msg1 db 'Enter a 5-digit number: $'          ; Input prompt
+    msg2 db 0Dh,0Ah, 'You entered: $'            ; Output message
+    num  db 5 dup(?)                             ; Reserve 5 bytes to store digits
+
+.CODE                    ; Begin code segment
+
+MAIN PROC
+    ;---------------------------------------------------------------
+    ; Step 1: Initialize the data segment register DS
+    ;---------------------------------------------------------------
+    mov ax, @data         ; Load the address of the data segment
+    mov ds, ax            ; Copy it into DS so we can access data variables
+
+    ;---------------------------------------------------------------
+    ; Step 2: Display the prompt message
+    ;---------------------------------------------------------------
+    mov ah, 09h           ; DOS function 09h = display string
+    lea dx, msg1          ; Load effective address of msg1 into DX
+    int 21h               ; Call DOS interrupt to print message
+
+    ;---------------------------------------------------------------
+    ; Step 3: Read 5 characters (digits) from the keyboard
+    ;---------------------------------------------------------------
+    mov si, 0             ; SI = index = 0 (points to first element of array)
+
+ReadLoop:
+    mov ah, 01h           ; DOS function 01h = read a character from keyboard
+    int 21h               ; Wait for user to press a key
+                          ; The ASCII value of the key is returned in AL
+
+    cmp al, 0Dh           ; Check if the key pressed is ENTER (ASCII 13)
+    je DoneInput          ; If yes, jump to DoneInput (allow early exit)
+
+    mov num[si], al       ; Store the character (digit) in array num[]
+    inc si                ; Move to next position in the array
+    cmp si, 5             ; Have we read 5 digits?
+    jl ReadLoop           ; If not yet, continue reading
+DoneInput:
+
+    ;---------------------------------------------------------------
+    ; Step 4: Print a newline and display header text
+    ;---------------------------------------------------------------
+    mov ah, 09h           ; DOS print string function
+    lea dx, msg2          ; Load address of msg2 ("You entered:")
+    int 21h               ; Display it
+
+    ;---------------------------------------------------------------
+    ; Step 5: Display the entered digits one by one
+    ;---------------------------------------------------------------
+    mov cx, 5             ; CX = counter (5 digits to display)
+    mov si, 0             ; Reset SI = 0 (point back to start of num[])
+
+DisplayLoop:
+    mov dl, num[si]       ; Load current digit (ASCII) into DL
+    mov ah, 02h           ; DOS function 02h = display one character
+    int 21h               ; Print DL to the screen
+    inc si                ; Move to next character in the array
+    loop DisplayLoop      ; Decrement CX and repeat until CX = 0
+
+    ;---------------------------------------------------------------
+    ; Step 6: Exit the program and return to DOS
+    ;---------------------------------------------------------------
+    mov ah, 4Ch           ; DOS terminate program function
+    int 21h               ; Return control to DOS
+
+MAIN ENDP
+END MAIN
+
+;=====================================================================
+; Program Title : GREETINGS.ASM /EXER43.ASM
+; Description   : Displays a greetings menu with 4 options:
+;                   1. Good Morning
+;                   2. Good Afternoon
+;                   3. Good Evening
+;                   4. Exit Program
+;                 Each option calls its own procedure.
+; Author        : ALLEAH DELA PENA
+; Assembler     : Turbo Assembler (TASM)
+; Target        : DOSBox (8086 real mode)
+;=====================================================================
+
+.MODEL SMALL                ; Small memory model (1 code + 1 data segment)
+.STACK 100h                 ; 256 bytes for stack
+
+.DATA                       ; ---- Start of data segment ----
+
+;----------------------------------------------------------
+; Menu text and messages
+;----------------------------------------------------------
+menuTitle db 0Dh,0Ah, 'Greetings',0Dh,0Ah,          \
+           'Main Menu',0Dh,0Ah,                     \
+           '1. Good Morning',0Dh,0Ah,               \
+           '2. Good Afternoon',0Dh,0Ah,             \
+           '3. Good Evening',0Dh,0Ah,               \
+           '4. Exit Program',0Dh,0Ah,               \
+           'Enter choice: $'
+
+msgMorning   db 0Dh,0Ah,0Dh,0Ah, 'Good Morning!$'
+msgAfternoon db 0Dh,0Ah,0Dh,0Ah, 'Good Afternoon!$'
+msgEvening   db 0Dh,0Ah,0Dh,0Ah, 'Good Evening!$'
+msgInvalid   db 0Dh,0Ah,0Dh,0Ah, 'Invalid choice. Please try again.$'
+msgExit      db 0Dh,0Ah,0Dh,0Ah, 'Thank you! Program will now exit.$'
+
+.CODE                       ; ---- Start of code segment ----
+
+;=====================================================================
+; MAIN PROCEDURE
+;=====================================================================
+MAIN PROC
+    ; Step 1: Initialize Data Segment
+    mov ax, @data
+    mov ds, ax
+
+MainMenu:
+    ; Step 2: Display Main Menu
+    mov ah, 09h
+    lea dx, menuTitle
+    int 21h
+
+    ; Step 3: Get user input (one character)
+    mov ah, 01h
+    int 21h
+    mov bl, al
+
+    ; Step 4: Print newline for spacing
+    mov ah, 02h
+    mov dl, 0Dh
+    int 21h
+    mov dl, 0Ah
+    int 21h
+
+    ; Step 5: Determine which option was chosen
+    cmp bl, '1'
+    je  CallMorning
+    cmp bl, '2'
+    je  CallAfternoon
+    cmp bl, '3'
+    je  CallEvening
+    cmp bl, '4'
+    je  CallExit
+    jmp InvalidChoice
+
+;----------------------------------------------------------
+; Step 6: Call Procedures
+;----------------------------------------------------------
+CallMorning:
+    call GoodMorning
+    jmp MainMenu
+
+CallAfternoon:
+    call GoodAfternoon
+    jmp MainMenu
+
+CallEvening:
+    call GoodEvening
+    jmp MainMenu
+
+CallExit:
+    call ExitProgram
+
+InvalidChoice:
+    call InvalidMsg
+    jmp MainMenu
+
+MAIN ENDP
+
+;=====================================================================
+; PROCEDURE: GoodMorning
+;=====================================================================
+GoodMorning PROC
+    mov ah, 09h
+    lea dx, msgMorning
+    int 21h
+    ret
+GoodMorning ENDP
+
+;=====================================================================
+; PROCEDURE: GoodAfternoon
+;=====================================================================
+GoodAfternoon PROC
+    mov ah, 09h
+    lea dx, msgAfternoon
+    int 21h
+    ret
+GoodAfternoon ENDP
+
+;=====================================================================
+; PROCEDURE: GoodEvening
+;=====================================================================
+GoodEvening PROC
+    mov ah, 09h
+    lea dx, msgEvening
+    int 21h
+    ret
+GoodEvening ENDP
+
+;=====================================================================
+; PROCEDURE: InvalidMsg
+;=====================================================================
+InvalidMsg PROC
+    mov ah, 09h
+    lea dx, msgInvalid
+    int 21h
+    ret
+InvalidMsg ENDP
+
+;=====================================================================
+; PROCEDURE: ExitProgram
+; Description: Displays exit message and terminates execution.
+;=====================================================================
+ExitProgram PROC
+    mov ah, 09h
+    lea dx, msgExit
+    int 21h
+
+    mov ah, 4Ch
+    mov al, 00h
+    int 21h
+ExitProgram ENDP
+
+END MAIN

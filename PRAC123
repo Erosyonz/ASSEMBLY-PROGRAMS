@@ -1,0 +1,158 @@
+
+putc MACRO char
+    mov ah, 02h
+    mov dl, char
+    int 21h
+ENDM
+renderc MACRO char, page, color, write
+    mov ah, 09h 
+    mov al, char
+    mov bh, page
+    mov bl, color
+    mov cx, write
+    int 10h
+ENDM
+setcursor MACRO row, col
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, row
+    mov dl, col
+    int 10h
+ENDM
+colorz MACRO color, write
+    mov ah, 09h 
+    mov bl, color
+    mov cx, write
+    int 10h
+ENDM
+.model small
+.data
+	txt_0_R4_C6 db "______________________________________________",'$'
+	txt_1_R5_C6 db "|Full Name:        |                         |",'$'
+	txt_2_R6_C6 db "|------------------|-------------------------|",'$'
+	txt_3_R7_C6 db "|Birthday:         |                         |",'$'
+	txt_4_R8_C6 db "|------------------|-------------------------|",'$'
+	txt_5_R9_C6 db "|Gender:           |                         |",'$'
+	txt_6_R10_C6 db "|------------------|-------------------------|",'$'
+	txt_7_R11_C6 db "|Email Address:    |                         |",'$'
+	txt_8_R12_C6 db "|------------------|-------------------------|",'$'
+	txt_9_R13_C6 db "|Password:         |                         |",'$'
+	txt_10_R14_C6 db "___________________|__________________________",'$'
+	txt_11_R20_C7 db "SUBMIT",'$'
+	txt_12_R20_C13 db "  ",'$'
+	txt_13_R20_C15 db "CANCEL",'$'
+	txt_14_R20_C21 db "  ",'$'
+	txt_15_R20_C23 db "EDIT",'$'
+.code
+
+.stack 100h
+start :
+    mov ax, @data
+    mov ds, ax
+
+    ; Set to video mode 
+    mov ah, 00h
+    mov al, 03h ; 80x25 color text mode
+    int 10h
+
+
+	setcursor 4, 6
+	colorz 31, 46
+	mov ah, 09h
+	mov dx, offset txt_0_R4_C6
+	int 21h
+
+	setcursor 5, 6
+	colorz 31, 46
+	mov ah, 09h
+	mov dx, offset txt_1_R5_C6
+	int 21h
+
+	setcursor 6, 6
+	colorz 31, 46
+	mov ah, 09h
+	mov dx, offset txt_2_R6_C6
+	int 21h
+
+	setcursor 7, 6
+	colorz 31, 46
+	mov ah, 09h
+	mov dx, offset txt_3_R7_C6
+	int 21h
+
+	setcursor 8, 6
+	colorz 31, 46
+	mov ah, 09h
+	mov dx, offset txt_4_R8_C6
+	int 21h
+
+	setcursor 9, 6
+	colorz 31, 46
+	mov ah, 09h
+	mov dx, offset txt_5_R9_C6
+	int 21h
+
+	setcursor 10, 6
+	colorz 31, 46
+	mov ah, 09h
+	mov dx, offset txt_6_R10_C6
+	int 21h
+
+	setcursor 11, 6
+	colorz 31, 46
+	mov ah, 09h
+	mov dx, offset txt_7_R11_C6
+	int 21h
+
+	setcursor 12, 6
+	colorz 31, 46
+	mov ah, 09h
+	mov dx, offset txt_8_R12_C6
+	int 21h
+
+	setcursor 13, 6
+	colorz 31, 46
+	mov ah, 09h
+	mov dx, offset txt_9_R13_C6
+	int 21h
+
+	setcursor 14, 6
+	colorz 31, 46
+	mov ah, 09h
+	mov dx, offset txt_10_R14_C6
+	int 21h
+
+	setcursor 20, 7
+	colorz 79, 6
+	mov ah, 09h
+	mov dx, offset txt_11_R20_C7
+	int 21h
+
+	setcursor 20, 13
+	colorz 0, 2
+	mov ah, 09h
+	mov dx, offset txt_12_R20_C13
+	int 21h
+
+	setcursor 20, 15
+	colorz 79, 6
+	mov ah, 09h
+	mov dx, offset txt_13_R20_C15
+	int 21h
+
+	setcursor 20, 21
+	colorz 0, 2
+	mov ah, 09h
+	mov dx, offset txt_14_R20_C21
+	int 21h
+
+	setcursor 20, 23
+	colorz 79, 4
+	mov ah, 09h
+	mov dx, offset txt_15_R20_C23
+	int 21h
+
+    mov ah, 4Ch      ; DOS exit function
+    mov al, 0        ; Return code 0
+    int 21h          ; Call DOS interrupt
+end start ; end program

@@ -1,0 +1,1279 @@
+; Filename: EXER27.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: October 6, 2025
+; Description: Program to accept 3 string inputs and output again the 3 strings on separate lines.
+
+
+.MODEL SMALL
+.STACK 100h
+
+.DATA
+inputString1 DB 50 DUP('$')
+inputString2 DB 50 DUP('$')  
+inputString3 DB 50 DUP('$')
+promptString1 DB 'Enter first string: $'
+promptString2 DB 'Enter second string: $'
+promptString3 DB 'Enter third string: $'
+outputString1 DB 'You entered first string: $'
+outputString2 DB 'You entered second string: $'
+outputString3 DB 'You entered third string: $'
+NEWLINE MACRO
+    MOV AH, 02h
+    MOV DL, 13       ; Carriage return
+    INT 21h
+    MOV DL, 10       ; Line feed
+    INT 21h
+ENDM   
+StringOutput MACRO StrDisplay
+    LEA DX, StrDisplay
+    MOV AH, 09h
+    INT 21h
+ENDM
+StringInput MACRO buffNum
+    LEA DX, buffNum
+    MOV AH, 0Ah
+    INT 21h
+ENDM
+OutputInput MACRO buffNum
+    LEA DX, buffNum + 2
+    MOV AH, 09h
+    INT 21h
+ENDM
+
+
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+    
+    ; Prompt and read first string
+    StringOutput promptString1
+    StringInput inputString1
+    NEWLINE
+    ; New line
+    
+    
+    ; Prompt and read second string  
+    StringOutput promptString2
+    StringInput inputString2
+    NEWLINE
+    
+    ; Prompt and read third string
+    StringOutput promptString3
+    StringInput inputString3
+    NEWLINE
+    
+
+    ; Display outputs
+    StringOutput outputString1
+    OutputInput inputString1 
+    NEWLINE
+    
+    StringOutput outputString2
+    OutputInput inputString2
+    NEWLINE
+
+    StringOutput outputString3
+    OutputInput inputString3
+    NEWLINE
+
+    MOV AX, 4C00h
+    INT 21h
+MAIN ENDP
+END MAIN
+
+; Filename: EXER28.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: October 6, 2025
+; Description: Make a program to input two single-digit numbers, add the two numbers, and display the sum of the two numbers.
+
+
+.MODEL SMALL
+.STACK 100H
+.DATA
+    num1 DB ?
+    num2 DB ?
+    sum DB ?
+    msg1 DB 'Enter first number (0-9): $'
+    msg2 DB 0DH, 0AH, 'Enter second number (0-9): $'
+    msg3 DB 0DH, 0AH, 'The sum is: $'
+
+NEWLINE MACRO
+    MOV AH, 02h
+    MOV DL, 13       ; Carriage return
+    INT 21h
+    MOV DL, 10       ; Line feed
+    INT 21h
+ENDM   
+StringOutput MACRO StrDisplay
+    LEA DX, StrDisplay
+    MOV AH, 09h
+    INT 21h
+ENDM
+NumInput MACRO buffNum
+    MOV AH, 01H
+    INT 21H
+    SUB AL, '0'
+    MOV buffNum, AL
+ENDM
+SumCalculate MACRO n1, n2, location
+    MOV AL, n1
+    ADD AL, n2
+    MOV location, AL
+ENDM
+DisplayCalculation MACRO
+    ADD sum, '0'
+    MOV DL, sum
+    MOV AH, 02H
+    INT 21H
+ENDM   
+.CODE
+
+
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+    
+    ; Input first number
+    StringOutput msg1
+    NumInput num1
+    
+    
+    ; Input second number
+
+    StringOutput msg2
+    NumInput num2
+    
+    ; Calculate sum
+    SumCalculate num1, num2, sum
+    
+    ; Display result
+    StringOutput msg3
+    DisplayCalculation
+
+    MOV AX, 4C00H
+    INT 21H
+MAIN ENDP
+END MAIN
+
+
+; Filename: EXER29.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: October 6, 2025
+; Description: Input two single-digit numbers, subtract the two numbers, and display the difference of the two numbers.
+
+.model small
+.stack 100h
+
+.data
+    msg1 db 'Enter first number: $'
+    msg2 db 'Enter second number: $'
+    resultMsg db 'The result is: $'
+    num1 db ?
+    num2 db ?
+    result db ?
+
+.code
+NEWLINE MACRO
+    MOV AH, 02h
+    MOV DL, 13       ; Carriage return
+    INT 21h
+    MOV DL, 10       ; Line feed
+    INT 21h
+ENDM   
+StringOutput MACRO StrDisplay
+    LEA DX, StrDisplay
+    MOV AH, 09h
+    INT 21h
+ENDM
+NumInput MACRO buffNum
+    call read_number
+    mov buffNum, al
+ENDM
+
+SubtractCalculate MACRO n1, n2, location
+    MOV AL, n1
+    SUB AL, n2
+    MOV location, AL
+ENDM
+start:
+    mov ax, @data
+    mov ds, ax
+    
+    ; Prompt for first number
+    StringOutput msg1
+    NumInput num1
+    NEWLINE
+
+    ; Prompt for second number
+    StringOutput msg2
+    NumInput num2
+    NEWLINE
+    
+    ; Subtract
+    SubtractCalculate num1, num2, result
+ 
+    ; Display result
+    StringOutput resultMsg
+    call print_result
+    
+    mov ax, 4C00h
+    int 21h
+
+read_number proc
+    mov ah, 01h
+    int 21h
+    sub al, '0'
+    ret
+read_number endp
+
+print_result proc
+    add result, '0'
+    mov ah, 0Eh
+    mov al, result
+    int 10h
+    ret
+print_result endp
+
+end start
+
+
+; Filename: EXER30.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: October 6, 2025
+; Description: Input two single-digit numbers, multiply the two numbers, and display the product of the two numbers.
+.model small
+.stack 100h
+
+.data
+     msg1 db 'Enter first number (0-9): $'
+    msg2 db 'Enter second number (0-9): $'
+    resultMsg db 'The result is: $'
+    num1 db ?
+    num2 db ?
+    result db ?
+
+.code
+NEWLINE MACRO
+    MOV AH, 02h
+    MOV DL, 13       ; Carriage return
+    INT 21h
+    MOV DL, 10       ; Line feed
+    INT 21h
+ENDM   
+StringOutput MACRO StrDisplay
+    LEA DX, StrDisplay
+    MOV AH, 09h
+    INT 21h
+ENDM
+NumInput MACRO buffNum
+    call read_number
+    mov buffNum, al
+ENDM
+
+MultiplyCalculate MACRO n1, n2, location
+    MOV AL, n1
+    MOV BL, n2
+    MUL BL
+    MOV location, AL
+ENDM
+start:
+    mov ax, @data
+    mov ds, ax
+    
+    ; Prompt for first number
+    StringOutput msg1
+    NumInput num1
+    NEWLINE
+
+    ; Prompt for second number
+    StringOutput msg2
+    NumInput num2
+    NEWLINE
+    
+    ; Subtract
+    MultiplyCalculate num1, num2, result
+ 
+    ; Display result
+    StringOutput resultMsg
+    call print_result
+    
+    mov ax, 4C00h
+    int 21h
+
+read_number proc
+    mov ah, 01h
+    int 21h
+    sub al, '0'
+    ret
+read_number endp
+
+print_result proc
+    add result, '0'
+    mov ah, 0Eh
+    mov al, result
+    int 10h
+    ret
+print_result endp
+
+end start
+
+
+; Filename: EXER31.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: October 6, 2025
+; Description: Input two single-digit numbers, divide the two numbers, and display the quotient of the two numbers.
+.model small
+.stack 100h
+
+.data
+     msg1 db 'Enter first number (0-9): $'
+    msg2 db 'Enter second number (0-9): $'
+    ERROR db 'ayaw zero gaw!!!: $'
+    resultMsg db 'The result is: $'
+    num1 db ?
+    num2 db ?
+    result db ?
+
+.code
+NEWLINE MACRO
+    MOV AH, 02h
+    MOV DL, 13       ; Carriage return
+    INT 21h
+    MOV DL, 10       ; Line feed
+    INT 21h
+ENDM   
+StringOutput MACRO StrDisplay
+    LEA DX, StrDisplay
+    MOV AH, 09h
+    INT 21h
+ENDM
+NumInput MACRO buffNum
+    call read_number
+    mov buffNum, al
+ENDM
+
+MultiplyCalculate MACRO n1, n2, location
+    MOV AL, n1
+    xor ah, ah
+    MOV BL, n2
+    DIV BL
+    MOV location, AL
+ENDM
+start:
+    mov ax, @data
+    mov ds, ax
+    
+    ; Prompt for first number   
+    StringOutput msg1
+    NumInput num1
+    NEWLINE
+
+    ; Prompt for second number
+    StringOutput msg2
+    NumInput num2
+    NEWLINE
+    
+      
+    ; Check for division by zero
+    cmp num2, 0
+    je div_by_zero
+
+
+    ; Subtract
+    MultiplyCalculate num1, num2, result
+ 
+    ; Display result
+    StringOutput resultMsg
+    call print_result
+    
+    mov ax, 4C00h
+    int 21h
+
+div_by_zero:
+   StringOutput msg2
+   StringOutput ERROR
+    mov ax, 4C00h
+    int 21h
+
+read_number proc
+    mov ah, 01h
+    int 21h
+    sub al, '0'
+    ret
+read_number endp
+
+print_result proc
+    add result, '0'
+    mov ah, 0Eh
+    mov al, result
+    int 10h
+    ret
+print_result endp
+
+end start
+
+; Filename: EXER32.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: October 6, 2025
+; Description: Create a program that inputs a character. If the character is the capital letter A, display message "You entered A.", else display "You entered not A"
+
+.model small
+.stack 100h
+
+.data
+    prompt db 'Enter a character: $'
+    msgA db 0Dh, 0Ah, 'You entered A.', '$'
+    msgNotA db 0Dh, 0Ah, 'You entered not A.', '$'
+
+.code
+main proc
+    mov ax, @data
+    mov ds, ax
+    
+    ; Display prompt
+    mov ah, 09h
+    lea dx, prompt
+    int 21h
+    
+    ; Read character
+    mov ah, 01h
+    int 21h
+    
+    ; Compare with 'A'
+    cmp al, 'A'
+    cmp al, 'a'\
+    je is_A
+    
+    ; Not A
+    mov ah, 09h
+    lea dx, msgNotA
+    int 21h
+    jmp exit_program
+    
+is_A:
+    mov ah, 09h
+    lea dx, msgA
+    int 21h
+    
+exit_program:
+    mov ax, 4c00h
+    int 21h
+main endp
+end main
+
+
+; Filename: EXER33.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: October 6, 2025
+; Description: Create a program that inputs a number. Display the following messages depending on the value of the number
+; "The number is equal to 5."
+; "The number is less than 5."
+; "The number is greater than 5."
+
+.model small
+.stack 100h
+
+.data
+    prompt db 'Enter a number (0-9): $'
+    msgEqual db 0Dh, 0Ah, 'The number is equal to 5.', '$'
+    msgLess db 0Dh, 0Ah, 'The number is less than 5.', '$'
+    msgGreater db 0Dh, 0Ah, 'The number is greater than 5.', '$'
+
+.code
+main proc
+    mov ax, @data
+    mov ds, ax
+    
+    ; Display prompt
+    mov ah, 09h
+    lea dx, prompt
+    int 21h
+    
+    ; Read number
+    mov ah, 01h
+    int 21h
+    sub al, '0'  ; Convert ASCII to number
+    
+    ; Compare with 5
+    cmp al, 5
+    je equal
+    jl less
+    jg greater
+    
+equal:
+    mov ah, 09h
+    lea dx, msgEqual
+    int 21h
+    jmp exit_program
+    
+less:
+    mov ah, 09h
+    lea dx, msgLess
+    int 21h
+    jmp exit_program
+    
+greater:
+    mov ah, 09h
+    lea dx, msgGreater
+    int 21h
+    
+exit_program:
+    mov ax, 4c00h
+    int 21h
+main endp
+end main
+
+; Filename: EXER34.ASM
+; Programmer Name: Alleah Dela Pena
+; Date: October 6, 2025
+; Description: Make a program to input two integers. Compare the two integers.
+; Display which one is greater and which one is smaller.
+
+.model small
+.stack 100h
+
+.data
+    prompt1 db 'Enter first number (0-9): $'
+    prompt2 db 0Dh, 0Ah, 'Enter second number (0-9): $'
+    msgGreater db 0Dh, 0Ah, 'Bigger number: $'
+    msgSmaller db 0Dh, 0Ah, 'Smaller number: $'
+    msgEqual db 0Dh, 0Ah, 'Both numbers are equal.', '$'
+    num1 db ?
+    num2 db ?
+
+.code
+main proc
+    mov ax, @data
+    mov ds, ax
+
+    ; Prompt and input first number
+    mov ah, 09h
+    lea dx, prompt1
+    int 21h
+    mov ah, 01h
+    int 21h
+    sub al, '0'
+    mov num1, al
+
+    ; Prompt and input second number
+    mov ah, 09h
+    lea dx, prompt2
+    int 21h
+    mov ah, 01h
+    int 21h
+    sub al, '0'
+    mov num2, al
+
+    ; Compare num1 and num2
+    mov al, num1
+    cmp al, num2
+    je equal
+
+    ; If not equal, determine which is greater and smaller
+    ja first_is_greater ; unsigned compare (both values are between 0–9)
+
+second_is_greater:
+    ; Display greater = num2
+    mov ah, 09h
+    lea dx, msgGreater
+    int 21h
+    mov al, num2
+    add al, '0'
+    mov dl, al
+    mov ah, 02h
+    int 21h
+
+    ; Display smaller = num1
+    mov ah, 09h
+    lea dx, msgSmaller
+    int 21h
+    mov al, num1
+    add al, '0'
+    mov dl, al
+    mov ah, 02h
+    int 21h
+
+    jmp exit_program
+
+first_is_greater:
+    ; Display greater = num1
+    mov ah, 09h
+    lea dx, msgGreater
+    int 21h
+    mov al, num1
+    add al, '0'
+    mov dl, al
+    mov ah, 02h
+    int 21h
+
+    ; Display smaller = num2
+    mov ah, 09h
+    lea dx, msgSmaller
+    int 21h
+    mov al, num2
+    add al, '0'
+    mov dl, al
+    mov ah, 02h
+    int 21h
+
+    jmp exit_program
+
+equal:
+    ; Display "Both numbers are equal"
+    mov ah, 09h
+    lea dx, msgEqual
+    int 21h
+
+exit_program:
+    mov ax, 4C00h
+    int 21h
+
+main endp
+end main
+
+
+
+
+
+
+
+
+
+; Filename: EXER35.ASM
+; Full Name: Alleah Dela Pena
+; Date: October 6,2025
+; Description:
+; Create a calculator program to perform the actual math operations and display the results. You may use any background color. See sample runs below.
+; After the user chooses an item from the main menu and inputs the numbers, the program performs the operation and displays the result, the program does the following:
+; 1. Clear the screen (look for the code on how to clear the screen).
+; 2. Displays the main menu and waits for the user to choose an operation.
+; 3. The program will end when the user chooses Exit.
+
+
+.model small
+.stack 100h
+
+; Macros
+putc MACRO char
+    mov ah, 02h
+    mov dl, char
+    int 21h
+ENDM
+
+renderc MACRO char, page, color, write
+    mov ah, 09h 
+    mov al, char
+    mov bh, page
+    mov bl, color
+    mov cx, write
+    int 10h
+ENDM
+
+setcursor MACRO row, col
+    mov ah, 02h
+    mov bh, 00h
+    mov dh, row
+    mov dl, col
+    int 10h
+ENDM
+
+colorz MACRO color, write
+    mov ah, 09h 
+    mov bl, color
+    mov cx, write
+    int 10h
+ENDM
+
+.data
+    ; Header texts
+    txt_0_R0_C0 db "THE CALCULATOR",'$'
+    txt_1_R1_C0 db "Created by: ALLEA DELA PENA",'$'
+    txt_2_R2_C0 db "Date: October 6, 2025",'$'
+    txt_3_R4_C0 db "Main Menu",'$'
+    txt_4_R5_C0 db "a-addition",'$'
+    txt_5_R6_C0 db "s-subtraction",'$'
+    txt_6_R7_C0 db "m-multiplication",'$'
+    txt_7_R8_C0 db "d-division",'$'
+    txt_8_R9_C0 db "e-exit",'$'
+    txt_9_R10_C0 db "Enter your choice: ",'$'
+    
+    ; Operation titles
+    addTitle db "Addition",'$'
+    subTitle db "Subtraction",'$'
+    mulTitle db "Multiplication",'$'
+    divTitle db "Division",'$'
+    exitTitle db "Exit Program",'$'
+    
+    ; Prompts
+    promptAdd1 db "Enter first addend: $"
+    promptAdd2 db "Enter second addend: $"
+    promptSub1 db "Enter minuend: $"
+    promptSub2 db "Enter subtrahend: $"
+    promptMul1 db "Enter multiplicand: $"
+    promptMul2 db "Enter multiplier: $"
+    promptDiv1 db "Enter dividend: $"
+    promptDiv2 db "Enter divisor: $"
+    
+    ; Result messages
+    resultAdd db "Sum: $"
+    resultSub db "Difference: $"
+    resultMul db "Product: $"
+    resultDiv db "Quotient: $"
+    
+    ; Display messages
+    addition1 db "First addend is: $"
+    addition2 db "Second addend is: $"
+    subtract1 db "Minuend is: $"
+    subtract2 db "Subtrahend is: $"
+    Multiply1 db "Multiplicand is: $"
+    Multiply2 db "Multiplier is: $"
+    Divide1 db "Dividend is: $"
+    Divide2 db "Divisor is: $"
+    
+    ; Continue prompt
+    continueMsg db "Press Enter to continue.",'$'
+    
+    ; Error messages
+    invalidChoice db "Invalid choice! Please enter a, s, m, d, or e.",'$'
+    invalidNumber db "Invalid number! Please enter 0-9.",'$'
+    
+    ; Variables
+    num1 db ?
+    num2 db ?
+    result db ?
+    choice db ?
+
+.code
+start:
+    mov ax, @data
+    mov ds, ax
+    
+main_loop:
+    ; Set to video mode 
+    mov ah, 00h
+    mov al, 03h ; 80x25 color text mode
+    int 10h
+
+    ; Display colored header and menu
+    call display_colored_header
+    
+    ; Get and validate user choice
+    call get_valid_choice
+    
+    ; Process choice
+    cmp choice, 'a'
+    je addition
+    cmp choice, 's'
+    je subtraction
+    cmp choice, 'm'
+    je multiplication
+    cmp choice, 'd'
+    je division
+    cmp choice, 'e'
+    je exit_program
+    
+    jmp main_loop
+
+addition:
+    call display_colored_add_title
+    call get_two_valid_numbers_add
+    call perform_addition
+    call display_results_add
+    jmp wait_continue
+
+subtraction:
+    call display_colored_sub_title
+    call get_two_valid_numbers_sub
+    call perform_subtraction
+    call display_results_sub
+    jmp wait_continue
+
+multiplication:
+    call display_colored_mul_title
+    call get_two_valid_numbers_mul
+    call perform_multiplication
+    call display_results_mul
+    jmp wait_continue
+
+division:
+    call display_colored_div_title
+    call get_div_valid_numbers
+    call perform_division
+    call display_results_div
+    jmp wait_continue
+
+exit_program:
+    call display_colored_exit_title
+    jmp end_program
+
+wait_continue:
+    setcursor 23, 0
+    colorz 15, 24
+    mov ah, 09h
+    mov dx, offset continueMsg
+    int 21h
+    
+    ; Wait for Enter key
+    mov ah, 01h
+    int 21h
+    
+    jmp main_loop
+
+wait_continue_exit:
+    setcursor 23, 0
+    colorz 15, 24
+    mov ah, 09h
+    mov dx, offset continueMsg
+    int 21h
+    mov ah, 01h
+    int 21h
+    jmp end_program
+
+end_program:
+    mov ax, 4c00h
+    int 21h
+
+; === COLORED HEADER DISPLAY ===
+display_colored_header proc
+    setcursor 0, 0
+    colorz 15, 14
+    mov ah, 09h
+    mov dx, offset txt_0_R0_C0
+    int 21h
+
+    setcursor 1, 0
+    colorz 15, 27
+    mov ah, 09h
+    mov dx, offset txt_1_R1_C0
+    int 21h
+
+    setcursor 2, 0
+    colorz 15, 21
+    mov ah, 09h
+    mov dx, offset txt_2_R2_C0
+    int 21h
+
+    setcursor 4, 0
+    colorz 15, 9
+    mov ah, 09h
+    mov dx, offset txt_3_R4_C0
+    int 21h
+
+    setcursor 5, 0
+    colorz 111, 10
+    mov ah, 09h
+    mov dx, offset txt_4_R5_C0
+    int 21h
+
+    setcursor 6, 0
+    colorz 47, 13
+    mov ah, 09h
+    mov dx, offset txt_5_R6_C0
+    int 21h
+
+    setcursor 7, 0
+    colorz 63, 16
+    mov ah, 09h
+    mov dx, offset txt_6_R7_C0
+    int 21h
+
+    setcursor 8, 0
+    colorz 95, 10
+    mov ah, 09h
+    mov dx, offset txt_7_R8_C0
+    int 21h
+
+    setcursor 9, 0
+    colorz 127, 6
+    mov ah, 09h
+    mov dx, offset txt_8_R9_C0
+    int 21h
+
+    setcursor 10, 0
+    colorz 15, 18
+    mov ah, 09h
+    mov dx, offset txt_9_R10_C0
+    int 21h
+
+    setcursor 23, 79
+    renderc 32, 0, 0fh, 1
+    ret
+display_colored_header endp
+
+; === COLORED OPERATION TITLES ===
+display_colored_add_title proc
+    setcursor 12, 0
+    colorz 111, 8
+    mov ah, 09h
+    mov dx, offset addTitle
+    int 21h
+    call new_line
+    ret
+display_colored_add_title endp
+
+display_colored_sub_title proc
+    setcursor 12, 0
+    colorz 47, 11
+    mov ah, 09h
+    mov dx, offset subTitle
+    int 21h
+    call new_line
+    ret
+display_colored_sub_title endp
+
+display_colored_mul_title proc
+    setcursor 12, 0
+    colorz 63, 14
+    mov ah, 09h
+    mov dx, offset mulTitle
+    int 21h
+    call new_line
+    ret
+display_colored_mul_title endp
+
+display_colored_div_title proc
+    setcursor 12, 0
+    colorz 95, 8
+    mov ah, 09h
+    mov dx, offset divTitle
+    int 21h
+    call new_line
+    ret
+display_colored_div_title endp
+
+display_colored_exit_title proc
+    setcursor 12, 0
+    colorz 127, 12
+    mov ah, 09h
+    mov dx, offset exitTitle
+    int 21h
+    call new_line
+    ret
+display_colored_exit_title endp
+
+; === INPUT/OUTPUT PROCEDURES ===
+get_two_valid_numbers_add proc
+    setcursor 13, 0
+    colorz 15, 19
+    mov ah, 09h
+    mov dx, offset promptAdd1
+    int 21h
+    call get_valid_digit
+    mov num1, al
+    
+    setcursor 14, 0
+    colorz 15, 20
+    mov ah, 09h
+    mov dx, offset promptAdd2
+    int 21h
+    call get_valid_digit
+    mov num2, al
+    ret
+get_two_valid_numbers_add endp
+
+get_two_valid_numbers_sub proc
+    setcursor 13, 0
+    colorz 15, 15
+    mov ah, 09h
+    mov dx, offset promptSub1
+    int 21h
+    call get_valid_digit
+    mov num1, al
+    
+    setcursor 14, 0
+    colorz 15, 18
+    mov ah, 09h
+    mov dx, offset promptSub2
+    int 21h
+    call get_valid_digit
+    mov num2, al
+    ret
+get_two_valid_numbers_sub endp
+
+get_two_valid_numbers_mul proc
+    setcursor 13, 0
+    colorz 15, 20
+    mov ah, 09h
+    mov dx, offset promptMul1
+    int 21h
+    call get_valid_digit
+    mov num1, al
+    
+    setcursor 14, 0
+    colorz 15, 16
+    mov ah, 09h
+    mov dx, offset promptMul2
+    int 21h
+    call get_valid_digit
+    mov num2, al
+    ret
+get_two_valid_numbers_mul endp
+
+get_div_valid_numbers proc
+    setcursor 13, 0
+    colorz 15, 15
+    mov ah, 09h
+    mov dx, offset promptDiv1
+    int 21h
+    call get_valid_digit
+    mov num1, al
+    
+get_divisor:
+    setcursor 14, 0
+    colorz 15, 15
+    mov ah, 09h
+    mov dx, offset promptDiv2
+    int 21h
+    call get_valid_digit
+    mov num2, al
+    
+    cmp num2, 0
+    jne divisor_ok
+    
+    setcursor 15, 0
+    colorz 79, 28
+    mov ah, 09h
+    mov dx, offset invalidNumber
+    int 21h
+    jmp get_divisor
+    
+divisor_ok:
+    ret
+get_div_valid_numbers endp
+
+; === VALIDATION PROCEDURES ===
+get_valid_choice proc
+get_choice:
+    setcursor 10, 19
+    mov ah, 01h
+    int 21h
+    mov choice, al
+    cmp al, 'a'
+    je valid_choice
+    cmp al, 's'
+    je valid_choice
+    cmp al, 'm'
+    je valid_choice
+    cmp al, 'd'
+    je valid_choice
+    cmp al, 'e'
+    je valid_choice
+    
+    setcursor 11, 0
+    colorz 15, 45
+    mov ah, 09h
+    mov dx, offset invalidChoice
+    int 21h
+    
+    jmp get_choice
+    
+valid_choice:
+    ret
+get_valid_choice endp
+
+get_valid_digit proc
+get_digit:
+    mov ah, 01h
+    int 21h
+    cmp al, '0'
+    jb invalid_digit
+    cmp al, '9'
+    ja invalid_digit
+    sub al, '0'
+    ret
+    
+invalid_digit:
+    putc 0Dh
+    putc 0Ah
+    colorz 79, 28
+    mov ah, 09h
+    mov dx, offset invalidNumber
+    int 21h
+    jmp get_digit
+get_valid_digit endp
+
+; === MATH OPERATIONS ===
+perform_addition proc
+    mov al, num1
+    add al, num2
+    mov result, al
+    ret
+perform_addition endp
+
+perform_subtraction proc
+    mov al, num1
+    sub al, num2
+    mov result, al
+    ret
+perform_subtraction endp
+
+perform_multiplication proc
+    mov al, num1
+    mov bl, num2
+    mul bl
+    mov result, al
+    ret
+perform_multiplication endp
+
+perform_division proc
+    mov al, num1
+    xor ah, ah
+    mov bl, num2
+    div bl
+    mov result, al
+    ret
+perform_division endp
+
+; === DISPLAY PROCEDURES ===
+display_results_add proc
+    call display_input_numbers_add
+    setcursor 17, 0
+    colorz 15, 5
+    mov ah, 09h
+    mov dx, offset resultAdd
+    int 21h
+    call display_result_number
+    ret
+display_results_add endp
+
+display_results_sub proc
+    call display_input_numbers_sub
+    setcursor 17, 0
+    colorz 15, 11
+    mov ah, 09h
+    mov dx, offset resultSub
+    int 21h
+    call display_result_number
+    ret
+display_results_sub endp
+
+display_results_mul proc
+    call display_input_numbers_mul
+    setcursor 17, 0
+    colorz 15, 8
+    mov ah, 09h
+    mov dx, offset resultMul
+    int 21h
+    call display_result_number
+    ret
+display_results_mul endp
+
+display_results_div proc
+    call display_input_numbers_div
+    setcursor 17, 0
+    colorz 15, 9
+    mov ah, 09h
+    mov dx, offset resultDiv
+    int 21h
+    call display_result_number
+    ret
+display_results_div endp
+
+display_input_numbers_add proc
+    setcursor 15, 0
+    colorz 15, 18
+    mov ah, 09h
+    mov dx, offset addition1
+    int 21h
+    mov dl, num1
+    add dl, '0'
+    putc dl
+    call new_line
+    
+    setcursor 16, 0
+    colorz 15, 19
+    mov ah, 09h
+    mov dx, offset addition2
+    int 21h
+    mov dl, num2
+    add dl, '0'
+    putc dl
+    call new_line
+    ret
+display_input_numbers_add endp
+
+display_input_numbers_sub proc
+    setcursor 15, 0
+    colorz 15, 14
+    mov ah, 09h
+    mov dx, offset subtract1
+    int 21h
+    mov dl, num1
+    add dl, '0'
+    putc dl
+    call new_line
+    
+    setcursor 16, 0
+    colorz 15, 16
+    mov ah, 09h
+    mov dx, offset subtract2
+    int 21h
+    mov dl, num2
+    add dl, '0'
+    putc dl
+    call new_line
+    ret
+display_input_numbers_sub endp
+
+display_input_numbers_mul proc
+    setcursor 15, 0
+    colorz 15, 18
+    mov ah, 09h
+    mov dx, offset Multiply1
+    int 21h
+    mov dl, num1
+    add dl, '0'
+    putc dl
+    call new_line
+    
+    setcursor 16, 0
+    colorz 15, 15
+    mov ah, 09h
+    mov dx, offset Multiply2
+    int 21h
+    mov dl, num2
+    add dl, '0'
+    putc dl
+    call new_line
+    ret
+display_input_numbers_mul endp
+
+display_input_numbers_div proc
+    setcursor 15, 0
+    colorz 15, 14
+    mov ah, 09h
+    mov dx, offset Divide1
+    int 21h
+    mov dl, num1
+    add dl, '0'
+    putc dl
+    call new_line
+    
+    setcursor 16, 0
+    colorz 15, 13
+    mov ah, 09h
+    mov dx, offset Divide2
+    int 21h
+    mov dl, num2
+    add dl, '0'
+    putc dl
+    call new_line
+    ret
+display_input_numbers_div endp
+
+display_result_number proc
+    mov dl, result
+    add dl, '0'
+    putc dl
+    call new_line
+    ret
+display_result_number endp
+
+new_line proc
+    putc 0Dh
+    putc 0Ah
+    ret
+new_line endp
+
+end start
